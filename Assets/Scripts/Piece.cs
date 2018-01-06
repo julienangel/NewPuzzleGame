@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Piece : MonoBehaviour {
 
+    GameManager gm;
+
 	public enum PieceType{
 		Playable,
 		Static, 
@@ -15,6 +17,6 @@ public class Piece : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+        gm = GameManager.gameManager;
 	}
 }

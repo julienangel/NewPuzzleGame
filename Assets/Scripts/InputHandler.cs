@@ -6,6 +6,18 @@ public class InputHandler : MonoBehaviour {
 
 	GameManager gm;
 
+	[HideInInspector]
+	public enum MoveDirection
+	{
+		Up,
+		left,
+		right,
+		down
+	};
+
+	[HideInInspector]
+	public static MoveDirection moveDirection;
+
 	// Use this for initialization
 	void Start () {
 		gm = GameManager.gameManager;
@@ -18,6 +30,15 @@ public class InputHandler : MonoBehaviour {
 			if (gm.gameState == GameManager.GameState.Editor)
 			{
 				gm.boardManager.EditOrPlacePiece (ConvertScreenToWorldPosition (Input.mousePosition));
+			}
+		}
+
+		if(gm.gameState == GameManager.GameState.InGame)
+		{
+			if(Input.GetKeyDown(KeyCode.W))
+			{
+				moveDirection = MoveDirection.Up;
+				gm.boardManager.MovePieces (moveDirection);
 			}
 		}
 	}
