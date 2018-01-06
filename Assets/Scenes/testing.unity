@@ -464,6 +464,7 @@ GameObject:
   - component: {fileID: 719197052}
   - component: {fileID: 719197051}
   - component: {fileID: 719197053}
+  - component: {fileID: 719197054}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -483,6 +484,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraManager: {fileID: 0}
+  inputHandler: {fileID: 719197054}
   levelEditorManager: {fileID: 719197053}
   gameState: 0
 --- !u!4 &719197052
@@ -509,7 +511,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3116cfa47c8938b4d93f542ea52e6b10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  piecePrefab: {fileID: 1857524863222406, guid: 22c06aa12b493114d99332e79ec1e001,
+    type: 2}
   LevelEditorBtn: {fileID: 152211705}
+--- !u!114 &719197054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 719197050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdc5c0f93f5d3f24ebf4ba229392ff91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &760215008
 GameObject:
   m_ObjectHideFlags: 0

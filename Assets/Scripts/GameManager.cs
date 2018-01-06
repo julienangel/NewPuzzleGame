@@ -10,8 +10,9 @@ public class GameManager : MonoBehaviour {
 	[HideInInspector]
 	public CameraManager cameraManager;
 
-	[SerializeField]
-	private LevelEditorManager levelEditorManager;
+	public InputHandler inputHandler;
+
+	public LevelEditorManager levelEditorManager;
 
 	[HideInInspector]
 	public BoardManager boardManager;

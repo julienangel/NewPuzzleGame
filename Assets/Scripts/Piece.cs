@@ -7,6 +7,7 @@ public class Piece : MonoBehaviour {
 	public enum PieceType{
 		Playable,
 		Static, 
+		MainPiece,
 		Goal
 	};
 

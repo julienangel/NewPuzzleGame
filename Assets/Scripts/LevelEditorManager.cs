@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class LevelEditorManager : MonoBehaviour
 {
+	public GameObject piecePrefab;
+
     GameManager gm;
 
     Color32 NONEDITINGCOLOR = Color.red;
@@ -13,13 +15,8 @@ public class LevelEditorManager : MonoBehaviour
     [SerializeField]
     Button LevelEditorBtn;
 
-    enum EditorState
-    {
-        Editing,
-        NonEditing
-    };
-
-    EditorState editorState;
+	//aux variables
+	GameManager.GameState previousState;
 
     // Use this for initialization
     void Start()
@@ -33,24 +30,27 @@ public class LevelEditorManager : MonoBehaviour
 
         gm = GameManager.gameManager;
         SetDefaultStart();
-        gm.eventManager.AddToList(ChangeEditorState);
-        LevelEditorBtn.onClick.AddListener(delegate () { gm.eventManager.ExecuteChangeEditorState(); });
+        //gm.eventManager.AddToList(ChangeEditorState);
+		LevelEditorBtn.onClick.AddListener(delegate () { ChangeEditorState(); });
     }
 
     public void ChangeEditorState()
     {
         ColorBlock cb = LevelEditorBtn.colors;
-        switch (editorState)
-        {
-            case EditorState.Editing:
-                cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
-                editorState = EditorState.NonEditing;
-                break;
-            case EditorState.NonEditing:
-                cb.pressedColor = cb.highlightedColor = cb.normalColor = EDITINGCOLOR;
-                editorState = EditorState.Editing;
-                break;
-        }
+
+		if (gm.gameState != GameManager.GameState.Editor)
+		{
+			cb.pressedColor = cb.highlightedColor = cb.normalColor = EDITINGCOLOR;
+			previousState = gm.gameState;
+			gm.gameState = GameManager.GameState.Editor;
+		}
+            
+		else
+		{
+			cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
+			gm.gameState = previousState;
+		}
+		
         LevelEditorBtn.colors = cb;
     }
 
@@ -60,13 +60,12 @@ public class LevelEditorManager : MonoBehaviour
         if (gm.gameState != GameManager.GameState.Editor)
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
-            editorState = EditorState.NonEditing;
         }
         else
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = EDITINGCOLOR;
-            editorState = EditorState.Editing;
         }
+
         LevelEditorBtn.colors = cb;
     }
 }
