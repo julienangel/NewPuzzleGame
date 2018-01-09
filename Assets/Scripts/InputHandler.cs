@@ -46,6 +46,18 @@ public class InputHandler : MonoBehaviour {
 				moveDirection = MoveDirection.Up;
 				gm.boardManager.MovePieces (moveDirection);
 			}
+
+			else if(Input.GetKeyDown(KeyCode.A))
+			{
+				moveDirection = MoveDirection.left;
+				gm.boardManager.MovePieces (moveDirection);
+			}
+
+			else if(Input.GetKeyDown(KeyCode.D))
+			{
+				moveDirection = MoveDirection.right;
+				gm.boardManager.MovePieces (moveDirection);
+			}
 		}
 	}
 

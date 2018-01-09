@@ -133,34 +133,40 @@ public class BoardManager
 			break;
 
 		case InputHandler.MoveDirection.left:
-			for (int i = 0; i < pieceBoard.GetLength (0); i++) {
-				for (int j = 1; j < pieceBoard.GetLength (1); j++) {
-					for (int k = j - 1; k >= 0; k--) {
-						if (pieceBoard [i, j] != null && pieceBoard [i, k] == null) {
-							pieceBoard [i, k] = pieceBoard [i, j];
-							pieceBoard [i, j] = null;
-							pieceBoard [i, k].SetDesiredPosition (new Vector2 (i, k));
-							if (!piecesToMove.Contains (pieceBoard [i, k]))
-								piecesToMove.Add (pieceBoard [i, k]);
-							j--;
-						}
+			for (int i = 1; i < pieceBoard.GetLength (0); i++) {
+				for (int j = 0; j < pieceBoard.GetLength (1); j++) {
+					for (int k = i - 1; k >= 0; k--) {
+						if (pieceBoard [i, j] != null && pieceBoard [k, j] == null) {
+							if (pieceBoard [i, j].pieceType != Piece.PieceType.Static) {
+								pieceBoard [k, j] = pieceBoard [i, j];
+								pieceBoard [i, j] = null;
+								pieceBoard [k, j].SetDesiredPosition (new Vector2 (k, j));
+								if (!piecesToMove.Contains (pieceBoard [k, j]))
+									piecesToMove.Add (pieceBoard [k, j]);
+								i--;
+							}
+						} else
+							break;
 					}
 				}
 			}
 			break;
 
 		case InputHandler.MoveDirection.right:
-			for (int i = 0; i < pieceBoard.GetLength (0); i++) {
-				for (int j = 1; j < pieceBoard.GetLength (1); j++) {
-					for (int k = j - 1; k >= 0; k--) {
-						if (pieceBoard [i, j] != null && pieceBoard [i, k] == null) {
-							pieceBoard [i, k] = pieceBoard [i, j];
-							pieceBoard [i, j] = null;
-							pieceBoard [i, k].SetDesiredPosition (new Vector2 (i, k));
-							if (!piecesToMove.Contains (pieceBoard [i, k]))
-								piecesToMove.Add (pieceBoard [i, k]);
-							j--;
-						}
+			for (int i = pieceBoard.GetLength (0) - 2; i >= 0; i--) {
+				for (int j = 0; j < pieceBoard.GetLength (1); j++) {
+					for (int k = i + 1; k <= pieceBoard.GetLength (0) - 1; k++) {
+						if (pieceBoard [i, j] != null && pieceBoard [k, j] == null) {
+							if (pieceBoard [i, j].pieceType != Piece.PieceType.Static) {
+								pieceBoard [k, j] = pieceBoard [i, j];
+								pieceBoard [i, j] = null;
+								pieceBoard [k, j].SetDesiredPosition (new Vector2 (k, j));
+								if (!piecesToMove.Contains (pieceBoard [k, j]))
+									piecesToMove.Add (pieceBoard [k, j]);
+								i++;
+							}
+						} else
+							break;
 					}
 				}
 			}
