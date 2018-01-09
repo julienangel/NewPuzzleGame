@@ -62,21 +62,17 @@ public class BoardManager
 
 		Vector2 vecRoundToInt = new Vector2 (Mathf.RoundToInt (mousePosClick.x), Mathf.RoundToInt (mousePosClick.y));
 
-		if (Input.GetKey (KeyCode.LeftShift)) {
-			if (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] != null) {
-				GameObject.Destroy (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y]);
+		if (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] != null) {
+			if (Input.GetKey (KeyCode.LeftShift)) {
+				GameObject.Destroy (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y].gameObject);
 				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = null;
 			}
-		} else if (Input.GetKey (KeyCode.A)) {
-			if (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] == null) {
+		} else {
+			if (Input.GetKey (KeyCode.A)) {
 				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = InstantiateGameObject (movablePiece, vecRoundToInt);
-			}
-		} else if (Input.GetKey (KeyCode.S)) {
-			if (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] == null) {
+			} else if (Input.GetKey (KeyCode.S)) {
 				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = InstantiateGameObject (staticPiece, vecRoundToInt);
-			}
-		} else if (Input.GetKey (KeyCode.D)) {
-			if (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] == null) {
+			} else if (Input.GetKey (KeyCode.D)) {
 				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = InstantiateGameObject (mainPiece, vecRoundToInt);
 			}
 		}
