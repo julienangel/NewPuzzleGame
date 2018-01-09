@@ -35,7 +35,13 @@ public class InputHandler : MonoBehaviour {
 
 		if(gm.gameState == GameManager.GameState.InGame)
 		{
-			if(Input.GetKeyDown(KeyCode.W))
+			if(Input.GetKeyDown(KeyCode.S))
+			{
+				moveDirection = MoveDirection.down;
+				gm.boardManager.MovePieces (moveDirection);
+			}
+
+			else if(Input.GetKeyDown(KeyCode.W))
 			{
 				moveDirection = MoveDirection.Up;
 				gm.boardManager.MovePieces (moveDirection);

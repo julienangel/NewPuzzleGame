@@ -69,29 +69,106 @@ public class BoardManager
 			}
 		} else if (Input.GetKey (KeyCode.A)) {
 			if (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] == null) {
-				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = GameObject.Instantiate (movablePiece, new Vector2 ((int)vecRoundToInt.x, (int)vecRoundToInt.y), Quaternion.identity).GetComponent<Piece>();
+				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = InstantiateGameObject (movablePiece, vecRoundToInt);
 			}
 		} else if (Input.GetKey (KeyCode.S)) {
 			if (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] == null) {
-				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = GameObject.Instantiate (staticPiece, new Vector2 ((int)vecRoundToInt.x, (int)vecRoundToInt.y), Quaternion.identity).GetComponent<Piece>();
+				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = InstantiateGameObject (staticPiece, vecRoundToInt);
 			}
 		} else if (Input.GetKey (KeyCode.D)) {
 			if (pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] == null) {
-				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = GameObject.Instantiate (mainPiece, new Vector2 ((int)vecRoundToInt.x, (int)vecRoundToInt.y), Quaternion.identity).GetComponent<Piece>();
+				pieceBoard [(int)vecRoundToInt.x, (int)vecRoundToInt.y] = InstantiateGameObject (mainPiece, vecRoundToInt);
 			}
 		}
 	}
 
+	public Piece InstantiateGameObject (GameObject objectToInstantiate, Vector2 pos)
+	{
+		return GameObject.Instantiate (objectToInstantiate, new Vector2 ((int)pos.x, (int)pos.y), Quaternion.identity).GetComponent<Piece> ();
+	}
+
 	public void MovePieces (InputHandler.MoveDirection md)
 	{
+		List<Piece> piecesToMove = new List<Piece> ();
 		switch (md) {
-		case InputHandler.MoveDirection.Up:
+		// starts ignoring the first line
+		case InputHandler.MoveDirection.down:
 			for (int i = 0; i < pieceBoard.GetLength (0); i++) {
 				for (int j = 0; j < pieceBoard.GetLength (1); j++) {
-					
+					for (int k = j - 1; k >= 0; k--) {
+						if (pieceBoard [i, j] != null && pieceBoard [i, k] == null) {
+							if (pieceBoard [i, j].pieceType != Piece.PieceType.Static) {
+								pieceBoard [i, k] = pieceBoard [i, j];
+								pieceBoard [i, j] = null;
+								pieceBoard [i, k].SetDesiredPosition (new Vector2 (i, k));
+								if (!piecesToMove.Contains (pieceBoard [i, k]))
+									piecesToMove.Add (pieceBoard [i, k]);
+								j--;
+							}
+						} else
+							break;
+					}
 				}
 			}
 			break;
+
+		case InputHandler.MoveDirection.Up:
+			for (int i = 0; i < pieceBoard.GetLength (0); i++) {
+				for (int j = pieceBoard.GetLength (1) - 2; j >= 0; j--) {
+					for (int k = j + 1; k <= pieceBoard.GetLength (1) - 1; k++) {
+						if (pieceBoard [i, j] != null && pieceBoard [i, k] == null) {
+							if (pieceBoard [i, j].pieceType != Piece.PieceType.Static) {
+								pieceBoard [i, k] = pieceBoard [i, j];
+								pieceBoard [i, j] = null;
+								pieceBoard [i, k].SetDesiredPosition (new Vector2 (i, k));
+								if (!piecesToMove.Contains (pieceBoard [i, k]))
+									piecesToMove.Add (pieceBoard [i, k]);
+								j++;
+							}
+						} else
+							break;
+					}
+				}
+			}
+			break;
+
+		case InputHandler.MoveDirection.left:
+			for (int i = 0; i < pieceBoard.GetLength (0); i++) {
+				for (int j = 1; j < pieceBoard.GetLength (1); j++) {
+					for (int k = j - 1; k >= 0; k--) {
+						if (pieceBoard [i, j] != null && pieceBoard [i, k] == null) {
+							pieceBoard [i, k] = pieceBoard [i, j];
+							pieceBoard [i, j] = null;
+							pieceBoard [i, k].SetDesiredPosition (new Vector2 (i, k));
+							if (!piecesToMove.Contains (pieceBoard [i, k]))
+								piecesToMove.Add (pieceBoard [i, k]);
+							j--;
+						}
+					}
+				}
+			}
+			break;
+
+		case InputHandler.MoveDirection.right:
+			for (int i = 0; i < pieceBoard.GetLength (0); i++) {
+				for (int j = 1; j < pieceBoard.GetLength (1); j++) {
+					for (int k = j - 1; k >= 0; k--) {
+						if (pieceBoard [i, j] != null && pieceBoard [i, k] == null) {
+							pieceBoard [i, k] = pieceBoard [i, j];
+							pieceBoard [i, j] = null;
+							pieceBoard [i, k].SetDesiredPosition (new Vector2 (i, k));
+							if (!piecesToMove.Contains (pieceBoard [i, k]))
+								piecesToMove.Add (pieceBoard [i, k]);
+							j--;
+						}
+					}
+				}
+			}
+			break;
+		}
+		int piecesToMoveCount = piecesToMove.Count;
+		for (int i = 0; i < piecesToMoveCount; i++) {
+			piecesToMove [i].Move ();
 		}
 	}
 }
