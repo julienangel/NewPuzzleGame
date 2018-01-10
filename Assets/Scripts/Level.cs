@@ -7,7 +7,7 @@ using System;
 public class Level  {
 
 	public int size;
-	public List <Piece> PieceList = new List<Piece>();
+	public List <PieceInfo> PieceList = new List<PieceInfo>();
 	public Vector2 GoalPos;
 
 	public Level(int size)
@@ -20,7 +20,7 @@ public class Level  {
 		this.GoalPos = goalPos;
 	}
 
-	public void AddPieceElement(Piece pieceElement)
+	public void AddPieceElement(PieceInfo pieceElement)
 	{
 		if(!PieceList.Contains(pieceElement))
 			PieceList.Add (pieceElement);
