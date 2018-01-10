@@ -9,30 +9,38 @@ public class BoardManager
 
 	public Piece[,] pieceBoard;
 	public GameObject[,] backgroundBoard;
+	public Vector2 Goal;
 
 	public GameObject movablePiece = null;
 	public GameObject mainPiece = null;
 	public GameObject staticPiece = null;
 	public GameObject backgroundPiece = null;
+	public GameObject goal = null;
 
 	public BoardManager ()
 	{
 		//this.mono = mono;
+		LoadPrefabs ();
+	}
+
+	void LoadPrefabs()
+	{
 		movablePiece = Resources.Load<GameObject> ("Prefabs/GamePieces/Piece");
 		backgroundPiece = Resources.Load<GameObject> ("Prefabs/GamePieces/Background");
 		staticPiece = Resources.Load<GameObject> ("Prefabs/GamePieces/StaticPiece");
 		mainPiece = Resources.Load<GameObject> ("Prefabs/GamePieces/MainPiece");
+		goal = Resources.Load<GameObject> ("Prefabs/GamePieces/Goal");
 	}
 
 	public void CreateBoard (int size)
 	{
 		PlaceBackgroundPieces (size);
-		PlacePieces (size);
+		CreateBoardPieces (size);
         
 		CameraManager.cameraManager.SetPositionAndOrtographicSize (size);
 	}
 
-	public void PlacePieces (int size)
+	public void CreateBoardPieces (int size)
 	{
 		pieceBoard = new Piece[size, size];
 
@@ -173,4 +181,6 @@ public class BoardManager
 			piecesToMove [i].Move ();
 		}
 	}
+
+	
 }

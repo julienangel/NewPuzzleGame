@@ -4,8 +4,8 @@ using UnityEngine;
 using System;
 
 [Serializable]
-public class Level  {
+public class PieceInfo {
 
-	public int size;
-	public List <Piece> PieceList = new List<Piece>();
+	public Vector2 pos;
+	public Piece.PieceType pieceType;
 }
