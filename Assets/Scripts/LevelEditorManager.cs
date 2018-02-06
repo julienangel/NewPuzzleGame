@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LevelEditorManager : MonoBehaviour
 {
-	public GameObject piecePrefab;
+    public GameObject piecePrefab;
 
     GameManager gm;
 
@@ -13,10 +13,10 @@ public class LevelEditorManager : MonoBehaviour
     Color32 EDITINGCOLOR = Color.green;
 
     [SerializeField]
-    Button LevelEditorBtn;
+    Button LevelEditorBtn, mixBoardBtn, executeSolutionBtn;
 
-	//aux variables
-	GameManager.GameState previousState;
+    //aux variables
+    GameManager.GameState previousState;
 
     // Use this for initialization
     void Start()
@@ -31,26 +31,28 @@ public class LevelEditorManager : MonoBehaviour
         gm = GameManager.gameManager;
         SetDefaultStart();
         //gm.eventManager.AddToList(ChangeEditorState);
-		LevelEditorBtn.onClick.AddListener(delegate () { ChangeEditorState(); });
+        LevelEditorBtn.onClick.AddListener(delegate () { ChangeEditorState(); });
+        mixBoardBtn.onClick.AddListener(delegate () { MixBoardFunc(); });
+        executeSolutionBtn.onClick.AddListener(delegate () { ExecuteSolutionFunc(); });
     }
 
     public void ChangeEditorState()
     {
         ColorBlock cb = LevelEditorBtn.colors;
 
-		if (gm.gameState != GameManager.GameState.Editor)
-		{
-			cb.pressedColor = cb.highlightedColor = cb.normalColor = EDITINGCOLOR;
-			previousState = gm.gameState;
-			gm.gameState = GameManager.GameState.Editor;
-		}
-            
-		else
-		{
-			cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
-			gm.gameState = previousState;
-		}
-		
+        if (gm.gameState != GameManager.GameState.Editor)
+        {
+            cb.pressedColor = cb.highlightedColor = cb.normalColor = EDITINGCOLOR;
+            previousState = gm.gameState;
+            gm.gameState = GameManager.GameState.Editor;
+        }
+
+        else
+        {
+            cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
+            gm.gameState = previousState;
+        }
+
         LevelEditorBtn.colors = cb;
     }
 
@@ -67,5 +69,15 @@ public class LevelEditorManager : MonoBehaviour
         }
 
         LevelEditorBtn.colors = cb;
+    }
+
+    public void MixBoardFunc()
+    {
+        gm.StartCoroutine(gm.boardManager.MixBoard());
+    }
+
+    public void ExecuteSolutionFunc()
+    {
+        gm.StartCoroutine(gm.boardManager.ExecuteSolution());
     }
 }

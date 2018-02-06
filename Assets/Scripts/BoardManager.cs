@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BoardManager
 {
+
+    List<InputHandler.MoveDirection> mixedBoardDir = new List<InputHandler.MoveDirection>(10);
 
     const float detectionOffset = -0.5f;
 
@@ -55,6 +58,12 @@ public class BoardManager
                 pieceBoard[i, j] = null;
             }
         }
+
+        pieceBoard[1, 1] = InstantiateGameObject(staticPiece, new Vector2(1, 1));
+        pieceBoard[1, 2] = InstantiateGameObject(goalPiece, new Vector2(1, 2));
+        pieceBoard[3, 3] = InstantiateGameObject(staticPiece, new Vector2(3, 3));
+        pieceBoard[0, 0] = InstantiateGameObject(movablePiece, new Vector2(0, 0));
+        pieceBoard[1, 2] = InstantiateGameObject(mainPiece, new Vector2(1, 2));
     }
 
     public void PlaceBackgroundPieces(int size)
@@ -101,7 +110,7 @@ public class BoardManager
             {
                 pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y] = InstantiateGameObject(mainPiece, vecRoundToInt);
             }
-            else if(Input.GetKey(KeyCode.F))
+            else if (Input.GetKey(KeyCode.F))
             {
                 pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y] = InstantiateGameObject(goalPiece, vecRoundToInt);
             }
@@ -113,12 +122,12 @@ public class BoardManager
         return GameObject.Instantiate(objectToInstantiate, new Vector2((int)pos.x, (int)pos.y), Quaternion.identity).GetComponent<Piece>();
     }
 
-    public void MovePieces(InputHandler.MoveDirection md)
+    public IEnumerator MovePieces(InputHandler.MoveDirection md)
     {
         List<Piece> piecesToMove = new List<Piece>();
 
         if (piecesAreMoving)
-            return;
+            yield break;
 
         int size = pieceBoard.GetLength(0);
 
@@ -132,7 +141,7 @@ public class BoardManager
                     {
                         for (int k = j - 1; k >= 0; k--)
                         {
-                            if (pieceBoard[i, j] != null && (pieceBoard[i, k] == null || pieceBoard[i,k].pieceType == Piece.PieceType.Goal))
+                            if (pieceBoard[i, j] != null && (pieceBoard[i, k] == null || pieceBoard[i, k].pieceType == Piece.PieceType.Goal))
                             {
                                 if (pieceBoard[i, j].pieceType != Piece.PieceType.Static && pieceBoard[i, j].pieceType != Piece.PieceType.Goal)
                                 {
@@ -251,7 +260,43 @@ public class BoardManager
 
     public void VerifyIfWin()
     {
-        if(mainPiecePosBoard == goalPosBoard)
+        if (mainPiecePosBoard == goalPosBoard)
             Debug.Log("Ganhas te!");
+    }
+
+    public IEnumerator MixBoard()
+    {
+        int mixedBoardLength = mixedBoardDir.Capacity;
+        for (int i = 0; i < mixedBoardLength; i++)
+        {
+            InputHandler.MoveDirection dir = (InputHandler.MoveDirection)UnityEngine.Random.Range(0, Enum.GetValues(typeof(InputHandler.MoveDirection)).Length);
+            while (mixedBoardDir.Count > 0 && dir == mixedBoardDir[mixedBoardDir.Count - 1])
+                dir = (InputHandler.MoveDirection)UnityEngine.Random.Range(0, Enum.GetValues(typeof(InputHandler.MoveDirection)).Length);
+            mixedBoardDir.Add(dir);
+            GameManager.gameManager.StartCoroutine(MovePieces(dir));
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        for (int i = 0; i < mixedBoardDir.Count; i++)
+        {
+            Debug.Log(i + ": " + mixedBoardDir[i].ToString());
+        }
+    }
+
+    public IEnumerator ExecuteSolution()
+    {
+        int mixedBoardLength = mixedBoardDir.Capacity;
+        mixedBoardDir.Reverse();
+        for (int i = 0; i < mixedBoardLength; i++)
+        {
+            InputHandler.MoveDirection dir = mixedBoardDir[i];
+            GameManager.gameManager.StartCoroutine(MovePieces(dir));
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        for (int i = 0; i < mixedBoardDir.Count; i++)
+        {
+            Debug.Log(i + ": " + mixedBoardDir[i].ToString());
+        }
     }
 }
