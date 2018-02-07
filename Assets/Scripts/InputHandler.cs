@@ -15,7 +15,7 @@ public class InputHandler : MonoBehaviour {
 		down
 	};
 
-	[HideInInspector]
+    [HideInInspector]
 	public static MoveDirection moveDirection;
 
 	// Use this for initialization
@@ -38,25 +38,25 @@ public class InputHandler : MonoBehaviour {
 			if(Input.GetKeyDown(KeyCode.S))
 			{
 				moveDirection = MoveDirection.down;
-				gm.boardManager.MovePieces (moveDirection);
+				StartCoroutine(gm.boardManager.MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.W))
 			{
 				moveDirection = MoveDirection.Up;
-				gm.boardManager.MovePieces (moveDirection);
+                StartCoroutine(gm.boardManager.MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.A))
 			{
 				moveDirection = MoveDirection.left;
-				gm.boardManager.MovePieces (moveDirection);
+                StartCoroutine(gm.boardManager.MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.D))
 			{
 				moveDirection = MoveDirection.right;
-				gm.boardManager.MovePieces (moveDirection);
+                StartCoroutine(gm.boardManager.MovePieces (moveDirection));
 			}
 		}
 	}

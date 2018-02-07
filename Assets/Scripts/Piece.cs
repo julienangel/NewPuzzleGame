@@ -6,9 +6,11 @@ public class Piece : MonoBehaviour {
 
     GameManager gm;
 
-    const float PIECE_TIME_VELOCITY = 0.25f;
+    [HideInInspector]
+    public static float PIECE_TIME_VELOCITY = 0.1f;
 
 	private Vector2 desiredPosition;
+    private Vector2 startPosition;
 
 	public enum PieceType{
 		Playable,
@@ -22,6 +24,8 @@ public class Piece : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         gm = GameManager.gameManager;
+
+        startPosition = transform.localPosition;
 
         if(pieceType == PieceType.Goal)
         {
@@ -39,13 +43,14 @@ public class Piece : MonoBehaviour {
             yield break;
         }
             
-        float t = 0f;
-        while(t < 1)
-        {
-            t += Time.deltaTime / PIECE_TIME_VELOCITY;
-            transform.localPosition = Vector2.Lerp(current, desiredPosition, t);
+        //float t = 0f;
+        //while(t < 1)
+        //{
+            //t += Time.deltaTime / PIECE_TIME_VELOCITY;
+            //transform.localPosition = Vector2.Lerp(current, desiredPosition, t);
+            transform.localPosition = desiredPosition;
             yield return null;
-        }
+        //}
 
         if (pieceType == PieceType.MainPiece)
         {
@@ -59,4 +64,10 @@ public class Piece : MonoBehaviour {
 	{
 		desiredPosition = newPos;
 	}
+
+    public void BackToOriginalPosition()
+    {
+        desiredPosition = startPosition;
+        StartCoroutine(Move());
+    }
 }
