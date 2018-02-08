@@ -13,7 +13,7 @@ public class LevelEditorManager : MonoBehaviour
     Color32 EDITINGCOLOR = Color.green;
 
     [SerializeField]
-    Button LevelEditorBtn, mixBoardBtn, executeSolutionBtn;
+    Button LevelEditorBtn, mixBoardBtn, executeSolutionBtn, saveLevelBtn;
 
     //aux variables
     GameManager.GameState previousState;
@@ -29,11 +29,13 @@ public class LevelEditorManager : MonoBehaviour
         }
 
         gm = GameManager.gameManager;
+
         SetDefaultStart();
-        //gm.eventManager.AddToList(ChangeEditorState);
+
         LevelEditorBtn.onClick.AddListener(delegate () { ChangeEditorState(); });
         mixBoardBtn.onClick.AddListener(delegate () { MixBoardFunc(); });
         executeSolutionBtn.onClick.AddListener(delegate () { ExecuteSolutionFunc(); });
+        saveLevelBtn.onClick.AddListener(delegate () { SaveLevelFunc(); });
     }
 
     public void ChangeEditorState()
@@ -79,5 +81,26 @@ public class LevelEditorManager : MonoBehaviour
     public void ExecuteSolutionFunc()
     {
         gm.StartCoroutine(gm.boardManager.ExecuteSolution());
+    }
+
+    public void SaveLevelFunc()
+    {
+        int size = gm.boardManager.pieceBoard.GetLength(0);
+
+        Level newLevel = new Level(size);
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (gm.boardManager.pieceBoard[i, j] != null)
+                {
+                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), gm.boardManager.pieceBoard[i, j].pieceType);
+                    newLevel.AddPieceElement(pieceInfo);
+                }
+            }
+        }
+
+        LevelJsonManager.SaveInJson(newLevel, "Level0");
     }
 }

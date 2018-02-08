@@ -57,12 +57,7 @@ public class BoardManager
                 pieceBoard[i, j] = null;
             }
         }
-
-        pieceBoard[1, 1] = InstantiateGameObject(staticPiece, new Vector2(1, 1));
-        pieceBoard[0, 3] = InstantiateGameObject(goalPiece, new Vector2(0, 3));
-        pieceBoard[3, 3] = InstantiateGameObject(staticPiece, new Vector2(3, 3));
-        pieceBoard[3, 0] = InstantiateGameObject(movablePiece, new Vector2(3, 0));
-        pieceBoard[4, 0] = InstantiateGameObject(mainPiece, new Vector2(4, 0));
+        
 
         for (int i = 0; i < 20; i++)
         {
@@ -344,12 +339,6 @@ public class BoardManager
                     Debug.Log(solutionBoardList[h]);
                 }
             }
-
-            pieceBoard[1, 1] = InstantiateGameObject(staticPiece, new Vector2(1, 1));
-            pieceBoard[0, 3] = InstantiateGameObject(goalPiece, new Vector2(0, 3));
-            pieceBoard[3, 3] = InstantiateGameObject(staticPiece, new Vector2(3, 3));
-            pieceBoard[3, 0] = InstantiateGameObject(movablePiece, new Vector2(3, 0));
-            pieceBoard[4, 0] = InstantiateGameObject(mainPiece, new Vector2(4, 0));
             mainPiecePosBoard = Vector2.zero;
 
             solutionBoardTemp.Clear();
