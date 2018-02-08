@@ -31,6 +31,10 @@ public class Piece : MonoBehaviour {
         {
             gm.boardManager.goalPosBoard = transform.localPosition;
         }
+        else if(pieceType == PieceType.MainPiece)
+        {
+            gm.boardManager.mainPiecePosBoard = transform.localPosition;
+        }
 	}
 
 	public IEnumerator Move()
@@ -52,7 +56,11 @@ public class Piece : MonoBehaviour {
             yield return null;
         //}
 
-        if (pieceType == PieceType.MainPiece)
+        if (pieceType == PieceType.Goal)
+        {
+            gm.boardManager.goalPosBoard = transform.localPosition;
+        }
+        else if (pieceType == PieceType.MainPiece)
         {
             gm.boardManager.mainPiecePosBoard = transform.localPosition;
         }

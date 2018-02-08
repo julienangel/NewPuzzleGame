@@ -1,1 +1,1 @@
-{"size":5,"PieceList":[{"pos":{"x":0.0,"y":1.0},"pieceType":3},{"pos":{"x":1.0,"y":1.0},"pieceType":1},{"pos":{"x":3.0,"y":0.0},"pieceType":0},{"pos":{"x":3.0,"y":3.0},"pieceType":1},{"pos":{"x":4.0,"y":0.0},"pieceType":2}]}
+{"size":5,"PieceList":[{"pos":{"x":2.0,"y":4.0},"pieceType":2},{"pos":{"x":3.0,"y":1.0},"pieceType":1},{"pos":{"x":3.0,"y":4.0},"pieceType":0},{"pos":{"x":4.0,"y":0.0},"pieceType":1},{"pos":{"x":4.0,"y":4.0},"pieceType":0}],"directionListSolution":[3,1,2]}

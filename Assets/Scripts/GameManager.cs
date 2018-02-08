@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
     
-	//Accessable to anywhere
+	//Accessible to anywhere
 	public static GameManager gameManager;
 
 	[HideInInspector]
@@ -43,5 +43,7 @@ public class GameManager : MonoBehaviour {
 		cameraManager = CameraManager.cameraManager;
         boardManager = new BoardManager();
         boardManager.CreateBoard(5);
+        boardManager.PlaceBackgroundPieces(5);
+        //boardManager.CreateRandomLevel();
     }
 }

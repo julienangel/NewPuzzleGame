@@ -8,6 +8,7 @@ public class Level  {
 
 	public int size;
 	public List <PieceInfo> PieceList = new List<PieceInfo>();
+    public List <InputHandler.MoveDirection> directionListSolution = new List<InputHandler.MoveDirection>();
 
 	public Level(int size)
 	{
@@ -19,4 +20,9 @@ public class Level  {
 		if(!PieceList.Contains(pieceElement))
 			PieceList.Add (pieceElement);
 	}
+
+    public void SaveSolution(List<InputHandler.MoveDirection> directionsSolution)
+    {
+        directionListSolution = new List<InputHandler.MoveDirection>(directionsSolution);
+    }
 }
