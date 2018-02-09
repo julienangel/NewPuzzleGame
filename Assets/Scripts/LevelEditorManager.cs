@@ -38,7 +38,7 @@ public class LevelEditorManager : MonoBehaviour
         LevelEditorBtn.onClick.AddListener(delegate () { ChangeEditorState(); });
         mixBoardBtn.onClick.AddListener(delegate () { gm.boardManager.CreateRandomLevel(); });
         executeSolutionBtn.onClick.AddListener(delegate () { ExecuteSolutionFunc(); });
-        saveLevelBtn.onClick.AddListener(delegate () { SaveLevelFunc(); });
+        saveLevelBtn.onClick.AddListener(delegate () { gm.boardManager.SaveLevel(); });
         loadLevelBtn.onClick.AddListener(delegate () { LoadLevelFunc(); });
     }
 
@@ -82,50 +82,9 @@ public class LevelEditorManager : MonoBehaviour
         gm.StartCoroutine(gm.boardManager.ExecuteSolution());
     }
 
-    public void SaveLevelFunc()
+    public void SaveLevelFunc(Level newLevel)
     {
-        int size = gm.boardManager.pieceBoard.GetLength(0);
-
-        Level newLevel = new Level(size);
-
-        for (int i = 0; i < size; i++)
-        {
-            for (int j = 0; j < size; j++)
-            {
-                if (gm.boardManager.pieceBoard[i, j] != null)
-                {
-                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), gm.boardManager.pieceBoard[i, j].pieceType);
-                    newLevel.AddPieceElement(pieceInfo);
-                }
-            }
-        }
-
-        newLevel.directionListSolution = new List<InputHandler.MoveDirection>(gm.boardManager.solutionBoardList);
-
         LevelJsonManager.SaveInJson(newLevel, "Level0");
-    }
-
-    public void SaveLevelFunc(int level)
-    {
-        int size = gm.boardManager.pieceBoard.GetLength(0);
-
-        Level newLevel = new Level(size);
-
-        for (int i = 0; i < size; i++)
-        {
-            for (int j = 0; j < size; j++)
-            {
-                if (gm.boardManager.pieceBoard[i, j] != null)
-                {
-                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), gm.boardManager.pieceBoard[i, j].pieceType);
-                    newLevel.AddPieceElement(pieceInfo);
-                }
-            }
-        }
-
-        newLevel.directionListSolution = new List<InputHandler.MoveDirection>(gm.boardManager.solutionBoardList);
-
-        LevelJsonManager.SaveInJson(newLevel, "Level" + level);
     }
 
     public void LoadLevelFunc()

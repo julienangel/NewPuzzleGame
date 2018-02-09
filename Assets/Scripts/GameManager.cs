@@ -43,7 +43,6 @@ public class GameManager : MonoBehaviour {
 		cameraManager = CameraManager.cameraManager;
         boardManager = new BoardManager();
         boardManager.CreateBoard(5);
-        boardManager.PlaceBackgroundPieces(5);
         //boardManager.CreateRandomLevel();
     }
 }

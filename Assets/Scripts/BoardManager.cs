@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class BoardManager
 {
-    const int sizeToSearch = 20;
-    public List<InputHandler.MoveDirection> solutionBoardList = new List<InputHandler.MoveDirection>(sizeToSearch);
+    int sizeToSearch = 20;
 
     const float detectionOffset = -0.5f;
 
@@ -41,7 +40,7 @@ public class BoardManager
 
     public void CreateBoard(int size)
     {
-        //PlaceBackgroundPieces(size);
+        PlaceBackgroundPieces(size);
         CreateBoardPieces(size);
 
         CameraManager.cameraManager.SetPositionAndOrtographicSize(size);
@@ -58,12 +57,6 @@ public class BoardManager
             {
                 pieceBoard[i, j] = null;
             }
-        }
-
-
-        for (int i = 0; i < 20; i++)
-        {
-            solutionBoardList.Add(InputHandler.MoveDirection.left);
         }
     }
 
@@ -121,7 +114,7 @@ public class BoardManager
     public Piece InstantiateGameObject(Piece.PieceType pieceType, Vector2 pos)
     {
         PieceInfo newPiece;
-        //return pieceBoard[(int)pos.x, (int)pos.y] = GameObject.Instantiate(objectToInstantiate, new Vector2((int)pos.x, (int)pos.y), Quaternion.identity).GetComponent<Piece>();
+
         switch (pieceType)
         {
             case Piece.PieceType.Goal:
@@ -141,47 +134,6 @@ public class BoardManager
                 return pieceBoard[(int)pos.x, (int)pos.y] = GameObject.Instantiate(staticPiece, pos, Quaternion.identity).GetComponent<Piece>();
         }
         return null;
-    }
-
-    public void ReloadLevel()
-    {
-        for (int y = 0; y < pieceBoard.GetLength(0); y++)
-        {
-            for (int x = 0; x < pieceBoard.GetLength(1); x++)
-            {
-                if (pieceBoard[x, y] != null)
-                {
-                    GameObject.Destroy(pieceBoard[x, y].gameObject);
-                    pieceBoard[x, y] = null;
-                }
-            }
-        }
-
-        CleanEverything();
-
-        int pieceListCount = pieceList.Count;
-        for (int i = 0; i < pieceListCount; i++)
-        {
-            Vector2 pos = pieceList[i].pos;
-            switch (pieceList[i].pieceType)
-            {
-                case Piece.PieceType.Goal:
-                    pieceBoard[(int)pos.x, (int)pos.y] = GameObject.Instantiate(goalPiece, pos, Quaternion.identity).GetComponent<Piece>();
-                    break;
-
-                case Piece.PieceType.MainPiece:
-                    pieceBoard[(int)pos.x, (int)pos.y] = GameObject.Instantiate(mainPiece, pos, Quaternion.identity).GetComponent<Piece>();
-                    break;
-
-                case Piece.PieceType.Playable:
-                    pieceBoard[(int)pos.x, (int)pos.y] = GameObject.Instantiate(movablePiece, pos, Quaternion.identity).GetComponent<Piece>();
-                    break;
-
-                case Piece.PieceType.Static:
-                    pieceBoard[(int)pos.x, (int)pos.y] = GameObject.Instantiate(staticPiece, pos, Quaternion.identity).GetComponent<Piece>();
-                    break;
-            }
-        }
     }
 
     public IEnumerator MovePieces(InputHandler.MoveDirection md)
@@ -373,21 +325,22 @@ public class BoardManager
 
             pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(Piece.PieceType.MainPiece, new Vector2((int)randomPos.x, (int)randomPos.y));
         }
-
-        //GameManager.gameManager.StartCoroutine(ExecuteSolution());
     }
 
     public void CleanEverything()
     {
         //Cleaning background pieces
-        //for (int i = 0; i < backgroundBoard.GetLength(0); i++)
-        //{
-        //    for (int j = 0; j < backgroundBoard.GetLength(1); j++)
-        //    {
-        //        GameObject.Destroy(backgroundBoard[i, j]);
-        //        backgroundBoard[i, j] = null;
-        //    }
-        //}
+        if(backgroundBoard.GetLength(0) > 0)
+        {
+            for (int i = 0; i < backgroundBoard.GetLength(0); i++)
+            {
+                for (int j = 0; j < backgroundBoard.GetLength(1); j++)
+                {
+                    GameObject.Destroy(backgroundBoard[i, j]);
+                    backgroundBoard[i, j] = null;
+                }
+            }
+        }
 
         //cleaning all pieces
         for (int y = 0; y < pieceBoard.GetLength(0); y++)
@@ -407,10 +360,13 @@ public class BoardManager
     bool foundSolution = false;
     public IEnumerator ExecuteSolution()
     {
+        Level newLevel = new Level(pieceBoard.GetLength(0));
         foundSolution = false;
-        for (int r = 0; r < 100; r++)
+        List<InputHandler.MoveDirection> solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
+
+        for (int r = 0; r < 1000; r++)
         {
-            List<InputHandler.MoveDirection> solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
+            solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
             int mixedBoardLength = solutionBoardTemp.Capacity;
 
             List<InputHandler.MoveDirection> directionsAble = new List<InputHandler.MoveDirection>
@@ -440,37 +396,74 @@ public class BoardManager
                 yield return new WaitForEndOfFrame();
             }
 
-            if (solutionBoardTemp.Count < solutionBoardList.Count && VerifyIfWin())
+            if (solutionBoardTemp.Count < sizeToSearch && VerifyIfWin())
             {
                 Debug.Log("Encontrou uma solução mais pequena : " + solutionBoardTemp.Count);
-                solutionBoardList = new List<InputHandler.MoveDirection>(solutionBoardTemp);
-                for (int h = 0; h < solutionBoardList.Count; h++)
-                {
-                    foundSolution = true;
-                    Debug.Log(solutionBoardList[h]);
-                }
+
+                newLevel.directionListSolution.Clear();
+                newLevel.directionListSolution = new List<InputHandler.MoveDirection>(solutionBoardTemp);
+
+                foundSolution = true;
+
+                sizeToSearch = solutionBoardTemp.Count;
             }
+
             solutionBoardTemp.Clear();
 
-            //ReloadLevel();
-            for (int y = 0; y < pieceBoard.GetLength(0); y++)
-            {
-                for (int x = 0; x < pieceBoard.GetLength(1); x++)
-                {
-                    if (pieceBoard[x, y] != null)
-                    {
-                        pieceBoard[x, y].BackToOriginalPosition();
-                    }
-                }
-            }
+            yield return new WaitForSeconds(5);
 
-            yield return new WaitForSeconds(.1f);
+            LevelEditorManager.editorManager.LoadLevelFunc();
+
+            yield return new WaitForSeconds(.2f);
 
             GC.Collect();
         }
-        if (foundSolution)
-            LevelEditorManager.editorManager.SaveLevelFunc();
 
-        yield return new WaitForSeconds(2f);
+        if (foundSolution)
+        {
+            SaveLevel(newLevel);
+        }
+
+        yield return new WaitForSeconds(.2f);
+        sizeToSearch = 20;
+    }
+
+    void SaveLevel(Level newLevel)
+    {
+        int size = newLevel.size;
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (pieceBoard[i, j] != null)
+                {
+                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].pieceType);
+                    newLevel.AddPieceElement(pieceInfo);
+                }
+            }
+        }
+
+        LevelEditorManager.editorManager.SaveLevelFunc(newLevel);
+    }
+
+    public void SaveLevel()
+    {
+        int size = pieceBoard.GetLength(0);
+        Level level = new Level(size);
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (pieceBoard[i, j] != null)
+                {
+                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].pieceType);
+                    level.AddPieceElement(pieceInfo);
+                }
+            }
+        }
+
+        LevelEditorManager.editorManager.SaveLevelFunc(level);
     }
 }
