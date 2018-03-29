@@ -11,8 +11,8 @@ public class InputHandler : MonoBehaviour {
 	{
 		Up,
 		left,
-		right,
-		down
+        down,
+		right
 	};
 
     [HideInInspector]

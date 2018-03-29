@@ -282,7 +282,7 @@ public class BoardManager
     public void CreateRandomLevel()
     {
         CleanEverything();
-        CreateBoard(5);
+        CreateBoard(6);
 
         //creating random movable objects
         for (int i = 0; i < (int)pieceBoard.GetLength(0) / 2; i++)
@@ -410,11 +410,11 @@ public class BoardManager
 
             solutionBoardTemp.Clear();
 
-            yield return new WaitForSeconds(5);
+            yield return new WaitForEndOfFrame();
 
             LevelEditorManager.editorManager.LoadLevelFunc();
 
-            yield return new WaitForSeconds(.2f);
+            yield return new WaitForEndOfFrame();
 
             GC.Collect();
         }
