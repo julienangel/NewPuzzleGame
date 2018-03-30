@@ -13,11 +13,8 @@ public class GameManager : MonoBehaviour {
 	public InputHandler inputHandler;
 
 	public LevelEditorManager levelEditorManager;
-
-	[HideInInspector]
-	public BoardManager boardManager;
-	[HideInInspector]
-	public EventManager eventManager;
+	
+	private BoardManager boardManager;
 
     [HideInInspector]
     public enum GameState
@@ -35,14 +32,18 @@ public class GameManager : MonoBehaviour {
 		DontDestroyOnLoad (this);
 		gameManager = this;
         gameState = GameState.InGame;
-        eventManager = new EventManager(this);
     }
 
     void Start()
     {
 		cameraManager = CameraManager.cameraManager;
         boardManager = new BoardManager();
-        boardManager.CreateBoard(5);
+        boardManager.CreateBoard(6);
         //boardManager.CreateRandomLevel();
+    }
+
+    public BoardManager GetBoardManager()
+    {
+        return boardManager;
     }
 }

@@ -10,6 +10,7 @@ public class LevelEditorManager : MonoBehaviour
     public GameObject piecePrefab;
 
     GameManager gm;
+    BoardManager bm;
 
     Color32 NONEDITINGCOLOR = Color.red;
     Color32 EDITINGCOLOR = Color.green;
@@ -32,13 +33,14 @@ public class LevelEditorManager : MonoBehaviour
         }
 
         gm = GameManager.gameManager;
+        bm = gm.GetBoardManager();
 
         SetDefaultStart();
 
         LevelEditorBtn.onClick.AddListener(delegate () { ChangeEditorState(); });
-        mixBoardBtn.onClick.AddListener(delegate () { gm.boardManager.CreateRandomLevel(); });
+        mixBoardBtn.onClick.AddListener(delegate () { bm.CreateRandomLevel(); });
         executeSolutionBtn.onClick.AddListener(delegate () { ExecuteSolutionFunc(); });
-        saveLevelBtn.onClick.AddListener(delegate () { gm.boardManager.SaveLevel(); });
+        saveLevelBtn.onClick.AddListener(delegate () { bm.SaveLevel(); });
         loadLevelBtn.onClick.AddListener(delegate () { LoadLevelFunc(); });
     }
 
@@ -79,7 +81,7 @@ public class LevelEditorManager : MonoBehaviour
 
     public void ExecuteSolutionFunc()
     {
-        gm.StartCoroutine(gm.boardManager.ExecuteSolution());
+        gm.StartCoroutine(bm.ExecuteSolution());
     }
 
     public void SaveLevelFunc(Level newLevel)
@@ -91,31 +93,14 @@ public class LevelEditorManager : MonoBehaviour
     {
         Level loadedLevel = LevelJsonManager.LoadFromJson(0);
 
-        gm.boardManager.CleanEverything();
-        gm.boardManager.CreateBoard(loadedLevel.size);
+        bm.CleanEverything();
+        bm.CreateBoard(loadedLevel.size);
 
         int pieceListCount = loadedLevel.PieceList.Count;
         for (int i = 0; i < pieceListCount; i++)
         {
             PieceInfo newPiece = loadedLevel.PieceList[i];
-            switch (newPiece.pieceType)
-            {
-                case Piece.PieceType.Goal:
-                    gm.boardManager.InstantiateGameObject(newPiece.pieceType, newPiece.pos);
-                    break;
-
-                case Piece.PieceType.MainPiece:
-                    gm.boardManager.InstantiateGameObject(newPiece.pieceType, newPiece.pos);
-                    break;
-
-                case Piece.PieceType.Playable:
-                    gm.boardManager.InstantiateGameObject(newPiece.pieceType, newPiece.pos);
-                    break;
-
-                case Piece.PieceType.Static:
-                    gm.boardManager.InstantiateGameObject(newPiece.pieceType, newPiece.pos);
-                    break;
-            }
+            bm.InstantiateGameObject(newPiece.pieceType, newPiece.pos);
         }
     }
 }

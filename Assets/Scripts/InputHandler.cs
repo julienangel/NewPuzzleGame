@@ -29,7 +29,7 @@ public class InputHandler : MonoBehaviour {
 		{
 			if (gm.gameState == GameManager.GameState.Editor)
 			{
-				gm.boardManager.EditOrPlacePiece (ConvertScreenToWorldPosition (Input.mousePosition));
+				gm.GetBoardManager().EditOrPlacePiece (ConvertScreenToWorldPosition (Input.mousePosition));
 			}
 		}
 
@@ -38,25 +38,25 @@ public class InputHandler : MonoBehaviour {
 			if(Input.GetKeyDown(KeyCode.S))
 			{
 				moveDirection = MoveDirection.down;
-				StartCoroutine(gm.boardManager.MovePieces (moveDirection));
+				//StartCoroutine(gm.boardManager.MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.W))
 			{
 				moveDirection = MoveDirection.Up;
-                StartCoroutine(gm.boardManager.MovePieces (moveDirection));
+                //StartCoroutine(gm.boardManager.MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.A))
 			{
 				moveDirection = MoveDirection.left;
-                StartCoroutine(gm.boardManager.MovePieces (moveDirection));
+                //StartCoroutine(gm.boardManager.MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.D))
 			{
 				moveDirection = MoveDirection.right;
-                StartCoroutine(gm.boardManager.MovePieces (moveDirection));
+                //StartCoroutine(gm.boardManager.MovePieces (moveDirection));
 			}
 		}
 	}

@@ -13,7 +13,7 @@ public class LevelGenerator {
 	{
 		Level level = new Level (size);
 
-		PieceInfo mainPiece = new PieceInfo (new Vector2 (0, 0), Piece.PieceType.MainPiece);
+		//PieceInfo mainPiece = new PieceInfo (new Vector2 (0, 0), Piece.PieceType.MainPiece);
 
 		return level;
 	}

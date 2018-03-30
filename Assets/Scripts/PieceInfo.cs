@@ -7,11 +7,11 @@ using System;
 public class PieceInfo {
 
 	public Vector2 pos;
-	public Piece.PieceType pieceType;
+    public Component pieceType;
 
-	public PieceInfo(Vector2 pos, Piece.PieceType pieceType)
+	public PieceInfo(Vector2 pos, Component pieceType)
 	{
 		this.pos = pos;
-		this.pieceType = pieceType;
+        this.pieceType = pieceType;
 	}
 }
