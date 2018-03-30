@@ -25,12 +25,17 @@ public class MovablePiece : Piece {
         }
 
         float t = 0f;
-        while (t < 1)
+        if (gameManager.gameState != GameManager.GameState.Solving)
         {
-            t += Time.deltaTime / PIECE_TIME_VELOCITY;
-            transform.localPosition = Vector2.Lerp(current, desiredPosition, t);
-            yield return null;
+            while (t < 1)
+            {
+                t += Time.deltaTime / PIECE_TIME_VELOCITY;
+                transform.localPosition = Vector2.Lerp(current, desiredPosition, t);
+                yield return null;
+            }
         }
+        else
+            transform.localPosition = desiredPosition;
 
         boardManager.EndedPiecesMovement();
         UpdatePosition(desiredPosition);
@@ -42,7 +47,7 @@ public class MovablePiece : Piece {
         desiredPosition = new Vector2(newPos.x, newPos.y);
     }
 
-    public void UpdatePosition(Vector2 newPos)
+    public virtual void UpdatePosition(Vector2 newPos)
     {
         this.position = newPos;
     }

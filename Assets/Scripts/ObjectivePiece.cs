@@ -9,5 +9,6 @@ public class ObjectivePiece : NonMovablePiece {
     {
         base.Start();
         boardManager.SetObjectivePiece(this);
+        pieceType = PieceType.objective;
     }
 }

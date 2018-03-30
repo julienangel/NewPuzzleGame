@@ -9,10 +9,17 @@ public class GoalPiece : MovablePiece {
     {
         base.Start();
         boardManager.SetGoalPiece(this);
+        pieceType = PieceType.goal;
     }
 
     public void UpdateGoalPiece()
     {
         boardManager.SetGoalPiecePos(desiredPosition);
+    }
+
+    public override void UpdatePosition(Vector2 newPos)
+    {
+        base.UpdatePosition(newPos);
+        gameManager.GetBoardManager().SetGoalPiecePos(newPos);
     }
 }

@@ -16,7 +16,7 @@ public class LevelEditorManager : MonoBehaviour
     Color32 EDITINGCOLOR = Color.green;
 
     [SerializeField]
-    Button LevelEditorBtn, mixBoardBtn, executeSolutionBtn, saveLevelBtn, loadLevelBtn;
+    Button LevelEditorBtn, mixBoardBtn, executeSolutionBtn, saveLevelBtn, loadLevelBtn, stopSolution;
 
     //aux variables
     GameManager.GameState previousState;
@@ -42,6 +42,7 @@ public class LevelEditorManager : MonoBehaviour
         executeSolutionBtn.onClick.AddListener(delegate () { ExecuteSolutionFunc(); });
         saveLevelBtn.onClick.AddListener(delegate () { bm.SaveLevel(); });
         loadLevelBtn.onClick.AddListener(delegate () { LoadLevelFunc(); });
+        stopSolution.onClick.AddListener(delegate () { StopSolution(); });
     }
 
     public void ChangeEditorState()
@@ -102,5 +103,11 @@ public class LevelEditorManager : MonoBehaviour
             PieceInfo newPiece = loadedLevel.PieceList[i];
             bm.InstantiateGameObject(newPiece.pieceType, newPiece.pos);
         }
+    }
+
+    public void StopSolution()
+    {
+        gm.StopAllCoroutines();
+        LoadLevelFunc();
     }
 }

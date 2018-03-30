@@ -8,5 +8,6 @@ public class StaticPiece : NonMovablePiece {
     void Start()
     {
         base.Start();
+        pieceType = PieceType.statice;
     }
 }

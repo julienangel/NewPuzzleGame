@@ -13,16 +13,17 @@ public class BoardManager
     public GameObject[,] backgroundBoard;
     public List<PieceInfo> pieceList = new List<PieceInfo>();
 
-    //private GoalPiece goalPiece;
+    private GoalPiece goalPiece;
+    private ObjectivePiece objectivePiece;
 
     private Vector2 goalPosBoard;
     private Vector2 objectivePosBoard;
 
-    public NormalPiece movablePiece = null;
-    public GoalPiece goalPiece = null;
-    public StaticPiece staticPiece = null;
+    public NormalPiece movablePiecePrefab = null;
+    public GoalPiece goalPiecePrefab = null;
+    public StaticPiece staticPiecePrefab = null;
     public GameObject backgroundPiece = null;
-    public ObjectivePiece objectivePiece = null;
+    public ObjectivePiece objectivePiecePrefab = null;
 
     private bool piecesAreMoving = false;
 
@@ -34,11 +35,11 @@ public class BoardManager
 
     void LoadPrefabs()
     {
-        movablePiece = Resources.Load<NormalPiece>("Prefabs/GamePieces/NormalPiece");
+        movablePiecePrefab = Resources.Load<NormalPiece>("Prefabs/GamePieces/NormalPiece");
         backgroundPiece = Resources.Load<GameObject>("Prefabs/GamePieces/Background");
-        staticPiece = Resources.Load<StaticPiece>("Prefabs/GamePieces/StaticPiece");
-        goalPiece = Resources.Load<GoalPiece>("Prefabs/GamePieces/Goal");
-        objectivePiece = Resources.Load<ObjectivePiece>("Prefabs/GamePieces/Objective");
+        staticPiecePrefab = Resources.Load<StaticPiece>("Prefabs/GamePieces/StaticPiece");
+        goalPiecePrefab = Resources.Load<GoalPiece>("Prefabs/GamePieces/Goal");
+        objectivePiecePrefab = Resources.Load<ObjectivePiece>("Prefabs/GamePieces/Objective");
     }
 
     public void CreateBoard(int size)
@@ -97,28 +98,47 @@ public class BoardManager
         {
             if (Input.GetKey(KeyCode.A))
             {
-                InstantiateGameObject(movablePiece, vecRoundToInt);
+                InstantiateGameObject(PieceType.normal, vecRoundToInt);
             }
             else if (Input.GetKey(KeyCode.S))
             {
-                InstantiateGameObject(staticPiece, vecRoundToInt);
+                InstantiateGameObject(PieceType.statice, vecRoundToInt);
             }
             else if (Input.GetKey(KeyCode.D))
             {
-                InstantiateGameObject(goalPiece, vecRoundToInt);
+                InstantiateGameObject(PieceType.goal, vecRoundToInt);
             }
             else if (Input.GetKey(KeyCode.F))
             {
-                InstantiateGameObject(objectivePiece, vecRoundToInt);
+                InstantiateGameObject(PieceType.objective, vecRoundToInt);
             }
         }
     }
 
-    public Piece InstantiateGameObject(Component classe, Vector2 pos)
+    public Piece InstantiateGameObject(PieceType classe, Vector2 pos)
     {
         PieceInfo newPiece;
-        pieceList.Add(newPiece = new PieceInfo(pos, classe as Piece));
-        return pieceBoard[(int)pos.x, (int)pos.y] = (Piece)GameObject.Instantiate(classe, pos, Quaternion.identity);
+        Component component;
+        pieceList.Add(newPiece = new PieceInfo(pos, classe));
+        switch (classe)
+        {
+            case PieceType.normal:
+                component = movablePiecePrefab;
+                break;
+            case PieceType.statice:
+                component = staticPiecePrefab;
+                break;
+            case PieceType.goal:
+                component = goalPiecePrefab;
+                break;
+            case PieceType.objective:
+                component = objectivePiecePrefab;
+                break;
+            default:
+                component = null;
+                break;
+        }
+        return pieceBoard[(int)pos.x, (int)pos.y] = (Piece)GameObject.Instantiate(component, pos, Quaternion.identity);
     }
 
     public IEnumerator MovePieces(InputHandler.MoveDirection md)
@@ -142,7 +162,7 @@ public class BoardManager
                         {
                             for (int k = j - 1; k >= 0; k--)
                             {
-                                if (pieceBoard[i, k] == null)
+                                if (pieceBoard[i, k] == null || pieceBoard[i, k].GetComponent<ObjectivePiece>())
                                 {
                                     if (pieceBoard[i, j].GetComponent<MovablePiece>())
                                     {
@@ -171,7 +191,7 @@ public class BoardManager
                         {
                             for (int k = j + 1; k <= size - 1; k++)
                             {
-                                if (pieceBoard[i, k] == null)
+                                if (pieceBoard[i, k] == null || pieceBoard[i, k].GetComponent<ObjectivePiece>())
                                 {
                                     if (pieceBoard[i, j].GetComponent<MovablePiece>())
                                     {
@@ -200,7 +220,7 @@ public class BoardManager
                         {
                             for (int k = i - 1; k >= 0; k--)
                             {
-                                if (pieceBoard[k, j] == null)
+                                if (pieceBoard[k, j] == null || pieceBoard[k, j].GetComponent<ObjectivePiece>())
                                 {
                                     if (pieceBoard[i, j].GetComponent<MovablePiece>())
                                     {
@@ -229,7 +249,7 @@ public class BoardManager
                         {
                             for (int k = i + 1; k <= pieceBoard.GetLength(0) - 1; k++)
                             {
-                                if (pieceBoard[k, j] == null)
+                                if (pieceBoard[k, j] == null || pieceBoard[k, j].GetComponent<ObjectivePiece>())
                                 {
                                     if (pieceBoard[i, j].GetComponent<MovablePiece>())
                                     {
@@ -266,7 +286,6 @@ public class BoardManager
     public void EndedPiecesMovement()
     {
         piecesAreMoving = false;
-        VerifyIfWin();
     }
 
     public bool VerifyIfWin()
@@ -289,7 +308,7 @@ public class BoardManager
             while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
                 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
 
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(movablePiece, new Vector2((int)randomPos.x, (int)randomPos.y));
+            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(PieceType.normal, new Vector2((int)randomPos.x, (int)randomPos.y));
         }
 
         //creating random static objects
@@ -300,7 +319,7 @@ public class BoardManager
             while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
                 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
 
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(staticPiece, new Vector2((int)randomPos.x, (int)randomPos.y));
+            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(PieceType.statice, new Vector2((int)randomPos.x, (int)randomPos.y));
         }
 
         //creating goal piece
@@ -310,7 +329,7 @@ public class BoardManager
             while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
                 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
 
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(goalPiece, new Vector2((int)randomPos.x, (int)randomPos.y));
+            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(PieceType.goal, new Vector2((int)randomPos.x, (int)randomPos.y));
         }
 
         //Create the main piece
@@ -320,7 +339,7 @@ public class BoardManager
             while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
                 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
 
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(objectivePiece, new Vector2((int)randomPos.x, (int)randomPos.y));
+            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(PieceType.objective, new Vector2((int)randomPos.x, (int)randomPos.y));
         }
     }
 
@@ -351,15 +370,24 @@ public class BoardManager
                 }
             }
         }
+
+        //just to prevent
+        GameObject[] o = GameObject.FindGameObjectsWithTag("Piece");
+        for (int i = 0; i < o.Length; i++)
+        {
+            GameObject.Destroy(o[i]);
+        }
     }
 
     int levelNumber = 0;
     bool foundSolution = false;
     public IEnumerator ExecuteSolution()
     {
+        GameManager.gameManager.gameState = GameManager.GameState.Solving;
         Level newLevel = new Level(pieceBoard.GetLength(0));
         foundSolution = false;
         List<InputHandler.MoveDirection> solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
+        sizeToSearch = 20;
 
         for (int r = 0; r < 1000; r++)
         {
@@ -423,6 +451,7 @@ public class BoardManager
 
         yield return new WaitForSeconds(.2f);
         sizeToSearch = 20;
+        GameManager.gameManager.gameState = GameManager.GameState.InGame;
     }
 
     void SaveLevel(Level newLevel)
@@ -435,7 +464,7 @@ public class BoardManager
             {
                 if (pieceBoard[i, j] != null)
                 {
-                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetComponent<Piece>());
+                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetPieceType());
                     newLevel.AddPieceElement(pieceInfo);
                 }
             }
@@ -455,7 +484,7 @@ public class BoardManager
             {
                 if (pieceBoard[i, j] != null)
                 {
-                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetComponent<Piece>());
+                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetPieceType());
                     level.AddPieceElement(pieceInfo);
                 }
             }
@@ -471,12 +500,14 @@ public class BoardManager
 
     public void SetGoalPiece(GoalPiece goalPiece)
     {
-        this.goalPosBoard = goalPiece.Position;
+        this.goalPiece = goalPiece;
+        this.goalPosBoard = this.goalPiece.Position;
     }
 
     public void SetObjectivePiece(ObjectivePiece objectivePiece)
     {
-        this.objectivePosBoard = objectivePiece.Position;
+        this.objectivePiece = objectivePiece;
+        this.objectivePosBoard = this.objectivePiece.Position;
     }
 
     public void SetElementOnBoard(int x, int y, Piece newPiece)

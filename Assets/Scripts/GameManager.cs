@@ -21,7 +21,8 @@ public class GameManager : MonoBehaviour {
     {
         Editor,
         Menu,
-        InGame
+        InGame,
+        Solving
     };
 
     [HideInInspector]
@@ -32,12 +33,13 @@ public class GameManager : MonoBehaviour {
 		DontDestroyOnLoad (this);
 		gameManager = this;
         gameState = GameState.InGame;
+        boardManager = new BoardManager();
     }
 
     void Start()
     {
 		cameraManager = CameraManager.cameraManager;
-        boardManager = new BoardManager();
+        gameState = GameState.InGame;
         boardManager.CreateBoard(6);
         //boardManager.CreateRandomLevel();
     }

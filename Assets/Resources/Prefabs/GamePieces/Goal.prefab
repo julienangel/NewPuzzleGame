@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4244183426054086}
   - component: {fileID: 212335238162485176}
-  - component: {fileID: 114578817090328446}
+  - component: {fileID: 114601757790046044}
   m_Layer: 0
-  m_Name: MainPiece
+  m_Name: Goal
   m_TagString: Piece
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114578817090328446
+--- !u!114 &114601757790046044
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -49,10 +49,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1857524863222406}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f9c177be412485428889ad4c32d917d, type: 3}
+  m_Script: {fileID: 11500000, guid: 2fe3b387de014834ba15f3ca89280757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pieceType: 2
 --- !u!212 &212335238162485176
 SpriteRenderer:
   m_ObjectHideFlags: 1

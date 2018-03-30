@@ -38,25 +38,25 @@ public class InputHandler : MonoBehaviour {
 			if(Input.GetKeyDown(KeyCode.S))
 			{
 				moveDirection = MoveDirection.down;
-				//StartCoroutine(gm.boardManager.MovePieces (moveDirection));
+				StartCoroutine(gm.GetBoardManager().MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.W))
 			{
 				moveDirection = MoveDirection.Up;
-                //StartCoroutine(gm.boardManager.MovePieces (moveDirection));
+                StartCoroutine(gm.GetBoardManager().MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.A))
 			{
 				moveDirection = MoveDirection.left;
-                //StartCoroutine(gm.boardManager.MovePieces (moveDirection));
+                StartCoroutine(gm.GetBoardManager().MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.D))
 			{
 				moveDirection = MoveDirection.right;
-                //StartCoroutine(gm.boardManager.MovePieces (moveDirection));
+                StartCoroutine(gm.GetBoardManager().MovePieces (moveDirection));
 			}
 		}
 	}

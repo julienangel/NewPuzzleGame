@@ -8,5 +8,6 @@ public class NormalPiece : MovablePiece {
     void Start()
     {
         base.Start();
+        pieceType = PieceType.normal;
     }
 }
