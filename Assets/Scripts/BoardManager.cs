@@ -238,7 +238,7 @@ public class BoardManager
 
         piecesAreMoving = true;
 
-        int piecesToMoveCount = piecesToMove.Count;
+        piecesToMoveCount = piecesToMove.Count;
 
         if (piecesToMoveCount == 0)
             EndedPiecesMovement();
@@ -247,6 +247,12 @@ public class BoardManager
         {
             piecesToMove[i].StartCoroutine("Move");
         }
+    }
+
+    int piecesToMoveCount = 0;
+    public bool DidMove()
+    {
+        return piecesToMoveCount > 1;
     }
 
     public void EndedPiecesMovement()

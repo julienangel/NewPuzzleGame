@@ -160,6 +160,8 @@ public class LevelEditorManager : MonoBehaviour
         bm.CleanEverything();
         bm.CreateBoard(6);
 
+        pieceBoard = bm.pieceBoard;
+
         //creating random movable objects
         for (int i = 0; i < (int)pieceBoard.GetLength(0) / 2; i++)
         {
@@ -206,21 +208,34 @@ public class LevelEditorManager : MonoBehaviour
     public IEnumerator ExecuteSolution()
     {
         int sizeToSearch = 20;
+        pieceBoard = bm.pieceBoard;
         gameManager.SetGameState(GameManager.GameState.Solving);
         Level newLevel = new Level(pieceBoard.GetLength(0));
         bool foundSolution = false;
         List<InputHandler.MoveDirection> solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
         sizeToSearch = 20;
 
+        List<InputHandler.MoveDirection> directionsAble = new List<InputHandler.MoveDirection>
+            {
+                InputHandler.MoveDirection.down,
+                InputHandler.MoveDirection.Up,
+                InputHandler.MoveDirection.right,
+                InputHandler.MoveDirection.left
+            };
+
         for (int r = 0; r < 1000; r++)
         {
             solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
             int mixedBoardLength = solutionBoardTemp.Capacity;
 
-            List<InputHandler.MoveDirection> directionsAble = new List<InputHandler.MoveDirection>
+            List<InputHandler.MoveDirection> verticalDirection = new List<InputHandler.MoveDirection>
             {
                 InputHandler.MoveDirection.down,
-                InputHandler.MoveDirection.Up,
+                InputHandler.MoveDirection.Up
+            };
+
+            List<InputHandler.MoveDirection> horizontalDirection = new List<InputHandler.MoveDirection>
+            {
                 InputHandler.MoveDirection.right,
                 InputHandler.MoveDirection.left
             };
@@ -229,9 +244,41 @@ public class LevelEditorManager : MonoBehaviour
             {
                 InputHandler.MoveDirection dir = directionsAble[UnityEngine.Random.Range(0, directionsAble.Count)];
 
-                gameManager.StartCoroutine(bm.MovePieces(dir));
+                if (verticalDirection.Contains(dir))
+                {
+                    directionsAble = new List<InputHandler.MoveDirection>();
+                    directionsAble.Add(InputHandler.MoveDirection.right);
+                    directionsAble.Add(InputHandler.MoveDirection.left);
+                }
+                else
+                {
+                    directionsAble = new List<InputHandler.MoveDirection>();
+                    directionsAble.Add(InputHandler.MoveDirection.Up);
+                    directionsAble.Add(InputHandler.MoveDirection.down);
+                }
 
-                directionsAble.Remove(dir);
+                yield return gameManager.StartCoroutine(bm.MovePieces(dir));
+
+                if(!bm.DidMove())
+                {
+                    if (verticalDirection.Contains(dir))
+                    {
+                        if (dir == InputHandler.MoveDirection.Up)
+                            dir = InputHandler.MoveDirection.down;
+                        else
+                            dir = InputHandler.MoveDirection.Up;
+                    }
+                    else
+                    {
+                        if (dir == InputHandler.MoveDirection.right)
+                            dir = InputHandler.MoveDirection.left;
+                        else
+                            dir = InputHandler.MoveDirection.right;
+                    }
+                    yield return gameManager.StartCoroutine(bm.MovePieces(dir));
+                }
+
+                //directionsAble.Remove(dir);
 
                 solutionBoardTemp.Add(dir);
 
@@ -279,6 +326,7 @@ public class LevelEditorManager : MonoBehaviour
 
     public void SaveLevel(Level newLevel)
     {
+        pieceBoard = bm.pieceBoard;
         int size = newLevel.size;
 
         for (int i = 0; i < size; i++)
@@ -293,11 +341,12 @@ public class LevelEditorManager : MonoBehaviour
             }
         }
 
-        LevelEditorManager.editorManager.SaveLevelFunc(newLevel);
+        SaveLevelFunc(newLevel);
     }
 
     public void SaveLevel()
     {
+        pieceBoard = bm.pieceBoard;
         int size = pieceBoard.GetLength(0);
         Level level = new Level(size);
 
