@@ -12,7 +12,7 @@ public class LevelEditorManager : MonoBehaviour
 
     public GameObject piecePrefab;
 
-    GameManager gm;
+    GameManager gameManager;
     BoardManager bm;
 
     Piece[,] pieceBoard;
@@ -37,8 +37,8 @@ public class LevelEditorManager : MonoBehaviour
             return;
         }
 
-        gm = GameManager.gameManager;
-        bm = gm.GetBoardManager();
+        gameManager = GameManager.gameManager;
+        bm = gameManager.GetBoardManager();
 
         pieceBoard = bm.pieceBoard;
 
@@ -47,7 +47,7 @@ public class LevelEditorManager : MonoBehaviour
         LevelEditorBtn.onClick.AddListener(delegate () { ChangeEditorState(); });
         mixBoardBtn.onClick.AddListener(delegate () { CreateRandomLevel(); });
         executeSolutionBtn.onClick.AddListener(delegate () { ExecuteSolutionFunc(); });
-        saveLevelBtn.onClick.AddListener(delegate () { bm.SaveLevel(); });
+        saveLevelBtn.onClick.AddListener(delegate () { SaveLevel(); });
         loadLevelBtn.onClick.AddListener(delegate () { LoadLevelFunc(); });
         stopSolution.onClick.AddListener(delegate () { StopSolution(); });
     }
@@ -56,17 +56,17 @@ public class LevelEditorManager : MonoBehaviour
     {
         ColorBlock cb = LevelEditorBtn.colors;
 
-        if (gm.gameState != GameManager.GameState.Editor)
+        if (gameManager.GetGameState() != GameManager.GameState.Editor)
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = EDITINGCOLOR;
-            previousState = gm.gameState;
-            gm.gameState = GameManager.GameState.Editor;
+            previousState = gameManager.GetGameState();
+            gameManager.SetGameState(GameManager.GameState.Editor);
         }
 
         else
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
-            gm.gameState = previousState;
+            gameManager.SetGameState(previousState);
         }
 
         LevelEditorBtn.colors = cb;
@@ -75,7 +75,7 @@ public class LevelEditorManager : MonoBehaviour
     public void SetDefaultStart()
     {
         ColorBlock cb = LevelEditorBtn.colors;
-        if (gm.gameState != GameManager.GameState.Editor)
+        if (gameManager.GetGameState() != GameManager.GameState.Editor)
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
         }
@@ -89,7 +89,7 @@ public class LevelEditorManager : MonoBehaviour
 
     public void ExecuteSolutionFunc()
     {
-        gm.StartCoroutine(bm.ExecuteSolution());
+        gameManager.StartCoroutine(ExecuteSolution());
     }
 
     public void SaveLevelFunc(Level newLevel)
@@ -114,7 +114,7 @@ public class LevelEditorManager : MonoBehaviour
 
     public void StopSolution()
     {
-        gm.StopCoroutine(bm.ExecuteSolution());
+        gameManager.StopCoroutine(ExecuteSolution());
         LoadLevelFunc();
     }
 
@@ -206,7 +206,7 @@ public class LevelEditorManager : MonoBehaviour
     public IEnumerator ExecuteSolution()
     {
         int sizeToSearch = 20;
-        gm.SetGameState(GameManager.GameState.Solving);
+        gameManager.SetGameState(GameManager.GameState.Solving);
         Level newLevel = new Level(pieceBoard.GetLength(0));
         bool foundSolution = false;
         List<InputHandler.MoveDirection> solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
@@ -229,7 +229,7 @@ public class LevelEditorManager : MonoBehaviour
             {
                 InputHandler.MoveDirection dir = directionsAble[UnityEngine.Random.Range(0, directionsAble.Count)];
 
-                GameManager.gameManager.StartCoroutine(bm.MovePieces(dir));
+                gameManager.StartCoroutine(bm.MovePieces(dir));
 
                 directionsAble.Remove(dir);
 
@@ -260,7 +260,7 @@ public class LevelEditorManager : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
 
-            LevelEditorManager.editorManager.LoadLevelFunc();
+            LoadLevelFunc();
 
             yield return new WaitForEndOfFrame();
 
@@ -269,11 +269,50 @@ public class LevelEditorManager : MonoBehaviour
 
         if (foundSolution)
         {
-            bm.SaveLevel(newLevel);
+            SaveLevel(newLevel);
         }
 
         yield return new WaitForSeconds(.2f);
         sizeToSearch = 20;
-        gm.SetGameState(GameManager.GameState.InGame);
+        gameManager.SetGameState(GameManager.GameState.InGame);
+    }
+
+    public void SaveLevel(Level newLevel)
+    {
+        int size = newLevel.size;
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (pieceBoard[i, j] != null)
+                {
+                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetPieceType());
+                    newLevel.AddPieceElement(pieceInfo);
+                }
+            }
+        }
+
+        LevelEditorManager.editorManager.SaveLevelFunc(newLevel);
+    }
+
+    public void SaveLevel()
+    {
+        int size = pieceBoard.GetLength(0);
+        Level level = new Level(size);
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (pieceBoard[i, j] != null)
+                {
+                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetPieceType());
+                    level.AddPieceElement(pieceInfo);
+                }
+            }
+        }
+
+        SaveLevelFunc(level);
     }
 }

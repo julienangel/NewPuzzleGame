@@ -25,7 +25,7 @@ public class MovablePiece : Piece {
         }
 
         float t = 0f;
-        if (gameManager.gameState != GameManager.GameState.Solving)
+        if (gameManager.GetGameState() != GameManager.GameState.Solving)
         {
             while (t < 1)
             {

@@ -5,6 +5,8 @@ using UnityEngine;
 public class InputHandler : MonoBehaviour {
 
 	GameManager gm;
+    BoardManager boardManager;
+    LevelEditorManager lvlEditorManager;
 
 	[HideInInspector]
 	public enum MoveDirection
@@ -21,19 +23,21 @@ public class InputHandler : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		gm = GameManager.gameManager;
+        boardManager = gm.GetBoardManager();
+        lvlEditorManager = gm.GetLevelEditorManager();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if(Input.GetMouseButtonDown(0))
 		{
-			if (gm.gameState == GameManager.GameState.Editor)
+			if (gm.GetGameState() == GameManager.GameState.Editor)
 			{
-				gm.GetBoardManager().EditOrPlacePiece (ConvertScreenToWorldPosition (Input.mousePosition));
+				lvlEditorManager.EditOrPlacePiece (ConvertScreenToWorldPosition (Input.mousePosition));
 			}
 		}
 
-		if(gm.gameState == GameManager.GameState.InGame)
+		if(gm.GetGameState() == GameManager.GameState.InGame)
 		{
 			if(Input.GetKeyDown(KeyCode.S))
 			{

@@ -12,7 +12,8 @@ public class GameManager : MonoBehaviour {
 
 	public InputHandler inputHandler;
 
-	public LevelEditorManager levelEditorManager;
+    [SerializeField]
+	private LevelEditorManager levelEditorManager;
 	
 	private BoardManager boardManager;
 
@@ -32,7 +33,7 @@ public class GameManager : MonoBehaviour {
 		DontDestroyOnLoad (this);
 		gameManager = this;
         gameState = GameState.InGame;
-        boardManager = new BoardManager();
+        boardManager = new BoardManager(this);
     }
 
     void Start()
@@ -56,5 +57,10 @@ public class GameManager : MonoBehaviour {
     public void SetGameState(GameState newGameState)
     {
         gameState = newGameState;
+    }
+
+    public LevelEditorManager GetLevelEditorManager()
+    {
+        return levelEditorManager;
     }
 }

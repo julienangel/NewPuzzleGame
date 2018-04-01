@@ -27,9 +27,12 @@ public class BoardManager
 
     private bool piecesAreMoving = false;
 
-    public BoardManager()
+    GameManager gameManager;
+
+    public BoardManager(GameManager gameManager)
     {
         //this.mono = mono;
+        this.gameManager = gameManager;
         LoadPrefabs();
     }
 
@@ -292,120 +295,6 @@ public class BoardManager
         {
             GameObject.Destroy(o[i]);
         }
-    }
-
-    int levelNumber = 0;
-    bool foundSolution = false;
-    public IEnumerator ExecuteSolution()
-    {
-        GameManager.gameManager.gameState = GameManager.GameState.Solving;
-        Level newLevel = new Level(pieceBoard.GetLength(0));
-        foundSolution = false;
-        List<InputHandler.MoveDirection> solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
-        sizeToSearch = 20;
-
-        for (int r = 0; r < 1000; r++)
-        {
-            solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
-            int mixedBoardLength = solutionBoardTemp.Capacity;
-
-            List<InputHandler.MoveDirection> directionsAble = new List<InputHandler.MoveDirection>
-            {
-                InputHandler.MoveDirection.down,
-                InputHandler.MoveDirection.Up,
-                InputHandler.MoveDirection.right,
-                InputHandler.MoveDirection.left
-            };
-
-            for (int i = 0; i < mixedBoardLength && !VerifyIfWin(); i++)
-            {
-                InputHandler.MoveDirection dir = directionsAble[UnityEngine.Random.Range(0, directionsAble.Count)];
-
-                GameManager.gameManager.StartCoroutine(MovePieces(dir));
-
-                directionsAble.Remove(dir);
-
-                solutionBoardTemp.Add(dir);
-
-                if (i != 0)
-                {
-                    directionsAble.Add(solutionBoardTemp[solutionBoardTemp.Count - 2]);
-                }
-
-                //yield return new WaitForSeconds(Piece.PIECE_TIME_VELOCITY);
-                yield return new WaitForEndOfFrame();
-            }
-
-            if (solutionBoardTemp.Count < sizeToSearch && VerifyIfWin())
-            {
-                Debug.Log("Encontrou uma solução mais pequena : " + solutionBoardTemp.Count);
-
-                newLevel.directionListSolution.Clear();
-                newLevel.directionListSolution = new List<InputHandler.MoveDirection>(solutionBoardTemp);
-
-                foundSolution = true;
-
-                sizeToSearch = solutionBoardTemp.Count;
-            }
-
-            solutionBoardTemp.Clear();
-
-            yield return new WaitForEndOfFrame();
-
-            LevelEditorManager.editorManager.LoadLevelFunc();
-
-            yield return new WaitForEndOfFrame();
-
-            GC.Collect();
-        }
-
-        if (foundSolution)
-        {
-            SaveLevel(newLevel);
-        }
-
-        yield return new WaitForSeconds(.2f);
-        sizeToSearch = 20;
-        GameManager.gameManager.gameState = GameManager.GameState.InGame;
-    }
-
-    public void SaveLevel(Level newLevel)
-    {
-        int size = newLevel.size;
-
-        for (int i = 0; i < size; i++)
-        {
-            for (int j = 0; j < size; j++)
-            {
-                if (pieceBoard[i, j] != null)
-                {
-                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetPieceType());
-                    newLevel.AddPieceElement(pieceInfo);
-                }
-            }
-        }
-
-        LevelEditorManager.editorManager.SaveLevelFunc(newLevel);
-    }
-
-    public void SaveLevel()
-    {
-        int size = pieceBoard.GetLength(0);
-        Level level = new Level(size);
-
-        for (int i = 0; i < size; i++)
-        {
-            for (int j = 0; j < size; j++)
-            {
-                if (pieceBoard[i, j] != null)
-                {
-                    PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetPieceType());
-                    level.AddPieceElement(pieceInfo);
-                }
-            }
-        }
-
-        LevelEditorManager.editorManager.SaveLevelFunc(level);
     }
 
     public void SetGoalPiecePos(Vector2 newPos)
