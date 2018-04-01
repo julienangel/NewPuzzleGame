@@ -24,9 +24,8 @@ public class GameManager : MonoBehaviour {
         InGame,
         Solving
     };
-
-    [HideInInspector]
-    public GameState gameState;
+    
+    private GameState gameState;
 
 	// Use this for initialization
 	void Awake () {
@@ -47,5 +46,15 @@ public class GameManager : MonoBehaviour {
     public BoardManager GetBoardManager()
     {
         return boardManager;
+    }
+
+    public GameState GetGameState()
+    {
+        return gameState;
+    }
+
+    public void SetGameState(GameState newGameState)
+    {
+        gameState = newGameState;
     }
 }

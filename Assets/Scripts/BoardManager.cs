@@ -78,43 +78,6 @@ public class BoardManager
         }
     }
 
-    public void EditOrPlacePiece(Vector2 mousePosClick)
-    {
-        if (mousePosClick.x < Vector2.zero.x + detectionOffset || mousePosClick.y < Vector2.zero.y + detectionOffset ||
-            mousePosClick.x > pieceBoard.GetLength(0) + detectionOffset || mousePosClick.y > pieceBoard.GetLength(1) + detectionOffset)
-            return;
-
-        Vector2 vecRoundToInt = new Vector2(Mathf.RoundToInt(mousePosClick.x), Mathf.RoundToInt(mousePosClick.y));
-
-        if (pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y] != null)
-        {
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                GameObject.Destroy(pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y].gameObject);
-                pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y] = null;
-            }
-        }
-        else
-        {
-            if (Input.GetKey(KeyCode.A))
-            {
-                InstantiateGameObject(PieceType.normal, vecRoundToInt);
-            }
-            else if (Input.GetKey(KeyCode.S))
-            {
-                InstantiateGameObject(PieceType.statice, vecRoundToInt);
-            }
-            else if (Input.GetKey(KeyCode.D))
-            {
-                InstantiateGameObject(PieceType.goal, vecRoundToInt);
-            }
-            else if (Input.GetKey(KeyCode.F))
-            {
-                InstantiateGameObject(PieceType.objective, vecRoundToInt);
-            }
-        }
-    }
-
     public Piece InstantiateGameObject(PieceType classe, Vector2 pos)
     {
         PieceInfo newPiece;
@@ -295,54 +258,6 @@ public class BoardManager
         return false;
     }
 
-    public void CreateRandomLevel()
-    {
-        CleanEverything();
-        CreateBoard(6);
-
-        //creating random movable objects
-        for (int i = 0; i < (int)pieceBoard.GetLength(0) / 2; i++)
-        {
-            Vector2 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
-
-            while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
-                randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
-
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(PieceType.normal, new Vector2((int)randomPos.x, (int)randomPos.y));
-        }
-
-        //creating random static objects
-        for (int j = 0; j < (int)pieceBoard.GetLength(0) / 2; j++)
-        {
-            Vector2 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
-
-            while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
-                randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
-
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(PieceType.statice, new Vector2((int)randomPos.x, (int)randomPos.y));
-        }
-
-        //creating goal piece
-        {
-            Vector2 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
-
-            while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
-                randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
-
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(PieceType.goal, new Vector2((int)randomPos.x, (int)randomPos.y));
-        }
-
-        //Create the main piece
-        {
-            Vector2 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
-
-            while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
-                randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
-
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = InstantiateGameObject(PieceType.objective, new Vector2((int)randomPos.x, (int)randomPos.y));
-        }
-    }
-
     public void CleanEverything()
     {
         //Cleaning background pieces
@@ -454,7 +369,7 @@ public class BoardManager
         GameManager.gameManager.gameState = GameManager.GameState.InGame;
     }
 
-    void SaveLevel(Level newLevel)
+    public void SaveLevel(Level newLevel)
     {
         int size = newLevel.size;
 
