@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
+public class testingManager : MonoBehaviour {
     
 	//Accessible to anywhere
-	public static GameManager gameManager;
+	public static testingManager TestingManager;
 
 	[HideInInspector]
 	public CameraManager cameraManager;
@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		DontDestroyOnLoad (this);
-		gameManager = this;
+		TestingManager = this;
         gameState = GameState.InGame;
         boardManager = new BoardManager(this);
     }

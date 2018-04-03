@@ -12,7 +12,7 @@ public class LevelEditorManager : MonoBehaviour
 
     public GameObject piecePrefab;
 
-    GameManager gameManager;
+    testingManager gameManager;
     BoardManager bm;
 
     Piece[,] pieceBoard;
@@ -24,7 +24,7 @@ public class LevelEditorManager : MonoBehaviour
     Button LevelEditorBtn, mixBoardBtn, executeSolutionBtn, saveLevelBtn, loadLevelBtn, stopSolution;
 
     //aux variables
-    GameManager.GameState previousState;
+    testingManager.GameState previousState;
 
     // Use this for initialization
     void Start()
@@ -37,7 +37,7 @@ public class LevelEditorManager : MonoBehaviour
             return;
         }
 
-        gameManager = GameManager.gameManager;
+        gameManager = testingManager.TestingManager;
         bm = gameManager.GetBoardManager();
 
         pieceBoard = bm.pieceBoard;
@@ -56,11 +56,11 @@ public class LevelEditorManager : MonoBehaviour
     {
         ColorBlock cb = LevelEditorBtn.colors;
 
-        if (gameManager.GetGameState() != GameManager.GameState.Editor)
+        if (gameManager.GetGameState() != testingManager.GameState.Editor)
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = EDITINGCOLOR;
             previousState = gameManager.GetGameState();
-            gameManager.SetGameState(GameManager.GameState.Editor);
+            gameManager.SetGameState(testingManager.GameState.Editor);
         }
 
         else
@@ -75,7 +75,7 @@ public class LevelEditorManager : MonoBehaviour
     public void SetDefaultStart()
     {
         ColorBlock cb = LevelEditorBtn.colors;
-        if (gameManager.GetGameState() != GameManager.GameState.Editor)
+        if (gameManager.GetGameState() != testingManager.GameState.Editor)
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
         }
@@ -94,12 +94,12 @@ public class LevelEditorManager : MonoBehaviour
 
     public void SaveLevelFunc(Level newLevel)
     {
-        LevelJsonManager.SaveInJson(newLevel, "Level0");
+        LevelJsonManager.SaveInJson(newLevel, "Level1");
     }
 
     public void LoadLevelFunc()
     {
-        Level loadedLevel = LevelJsonManager.LoadFromJson(0);
+        Level loadedLevel = LevelJsonManager.LoadFromJson(1);
 
         bm.CleanEverything();
         bm.CreateBoard(loadedLevel.size);
@@ -209,7 +209,7 @@ public class LevelEditorManager : MonoBehaviour
     {
         int sizeToSearch = 20;
         pieceBoard = bm.pieceBoard;
-        gameManager.SetGameState(GameManager.GameState.Solving);
+        gameManager.SetGameState(testingManager.GameState.Solving);
         Level newLevel = new Level(pieceBoard.GetLength(0));
         bool foundSolution = false;
         List<InputHandler.MoveDirection> solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
@@ -321,7 +321,7 @@ public class LevelEditorManager : MonoBehaviour
 
         yield return new WaitForSeconds(.2f);
         sizeToSearch = 20;
-        gameManager.SetGameState(GameManager.GameState.InGame);
+        gameManager.SetGameState(testingManager.GameState.InGame);
     }
 
     public void SaveLevel(Level newLevel)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour {
 
-	GameManager gm;
+	testingManager gm;
     BoardManager boardManager;
     LevelEditorManager lvlEditorManager;
 
@@ -22,7 +22,7 @@ public class InputHandler : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		gm = GameManager.gameManager;
+		gm = testingManager.TestingManager;
         boardManager = gm.GetBoardManager();
         lvlEditorManager = gm.GetLevelEditorManager();
 	}
@@ -31,13 +31,13 @@ public class InputHandler : MonoBehaviour {
 	void Update () {
 		if(Input.GetMouseButtonDown(0))
 		{
-			if (gm.GetGameState() == GameManager.GameState.Editor)
+			if (gm.GetGameState() == testingManager.GameState.Editor)
 			{
 				lvlEditorManager.EditOrPlacePiece (ConvertScreenToWorldPosition (Input.mousePosition));
 			}
 		}
 
-		if(gm.GetGameState() == GameManager.GameState.InGame)
+		if(gm.GetGameState() == testingManager.GameState.InGame)
 		{
 			if(Input.GetKeyDown(KeyCode.S))
 			{

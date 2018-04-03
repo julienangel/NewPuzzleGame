@@ -27,9 +27,9 @@ public class BoardManager
 
     private bool piecesAreMoving = false;
 
-    GameManager gameManager;
+    testingManager gameManager;
 
-    public BoardManager(GameManager gameManager)
+    public BoardManager(testingManager gameManager)
     {
         //this.mono = mono;
         this.gameManager = gameManager;

@@ -16,7 +16,7 @@ public class Piece : MonoBehaviour
     //public
 
     //protected
-    protected GameManager gameManager;
+    protected testingManager gameManager;
     protected BoardManager boardManager;
     protected Vector2 position;
     protected PieceType pieceType;
@@ -29,7 +29,7 @@ public class Piece : MonoBehaviour
     // Use this for initialization
     public virtual void Start()
     {
-        gameManager = GameManager.gameManager;
+        gameManager = testingManager.TestingManager;
         position = transform.localPosition;
         boardManager = gameManager.GetBoardManager();
 
