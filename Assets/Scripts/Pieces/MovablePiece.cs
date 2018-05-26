@@ -10,7 +10,7 @@ public class MovablePiece : Piece {
     protected Vector2 startPosition;
 
     // Use this for initialization
-    public override void Start()
+    protected override void Start()
     {
         base.Start();
     }
@@ -25,7 +25,7 @@ public class MovablePiece : Piece {
         }
 
         float t = 0f;
-        if (gameManager.GetGameState() != testingManager.GameState.Solving)
+        if (gameManager.GetGameState() != EditorManager.GameState.Solving)
         {
             while (t < 1)
             {

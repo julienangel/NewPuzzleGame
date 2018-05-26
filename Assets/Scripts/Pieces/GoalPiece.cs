@@ -5,7 +5,7 @@ using UnityEngine;
 public class GoalPiece : MovablePiece {
 
     // Use this for initialization
-    void Start()
+    protected override void Start()
     {
         base.Start();
         boardManager.SetGoalPiece(this);

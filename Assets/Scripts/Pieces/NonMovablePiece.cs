@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectivePiece : NonMovablePiece {
+public class NonMovablePiece : Piece {
 
     // Use this for initialization
-    void Start()
+    protected override void Start()
     {
         base.Start();
-        boardManager.SetObjectivePiece(this);
-        pieceType = PieceType.objective;
     }
 }

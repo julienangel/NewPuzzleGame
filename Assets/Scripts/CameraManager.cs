@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour {
 
-	public static CameraManager cameraManager;
+	public static CameraManager instance;
 
 	private Camera cameraProperties;
 
 	// Use this for initialization
 	void Start () {
-		cameraManager = this;
+		instance = this;
 		cameraProperties = GetComponent<Camera> ();
 	}
 

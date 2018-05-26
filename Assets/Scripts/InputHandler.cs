@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour {
 
-	testingManager gm;
+	EditorManager editorManager;
     BoardManager boardManager;
     LevelEditorManager lvlEditorManager;
 
@@ -22,45 +22,45 @@ public class InputHandler : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		gm = testingManager.TestingManager;
-        boardManager = gm.GetBoardManager();
-        lvlEditorManager = gm.GetLevelEditorManager();
+		editorManager = EditorManager.Instance;
+        boardManager = editorManager.GetBoardManager();
+        lvlEditorManager = editorManager.GetLevelEditorManager();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if(Input.GetMouseButtonDown(0))
 		{
-			if (gm.GetGameState() == testingManager.GameState.Editor)
+			if (editorManager.GetGameState() == EditorManager.GameState.Editor)
 			{
 				lvlEditorManager.EditOrPlacePiece (ConvertScreenToWorldPosition (Input.mousePosition));
 			}
 		}
 
-		if(gm.GetGameState() == testingManager.GameState.InGame)
+		if(editorManager.GetGameState() == EditorManager.GameState.InGame)
 		{
 			if(Input.GetKeyDown(KeyCode.S))
 			{
 				moveDirection = MoveDirection.down;
-				StartCoroutine(gm.GetBoardManager().MovePieces (moveDirection));
+				StartCoroutine(editorManager.GetBoardManager().MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.W))
 			{
 				moveDirection = MoveDirection.Up;
-                StartCoroutine(gm.GetBoardManager().MovePieces (moveDirection));
+                StartCoroutine(editorManager.GetBoardManager().MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.A))
 			{
 				moveDirection = MoveDirection.left;
-                StartCoroutine(gm.GetBoardManager().MovePieces (moveDirection));
+                StartCoroutine(editorManager.GetBoardManager().MovePieces (moveDirection));
 			}
 
 			else if(Input.GetKeyDown(KeyCode.D))
 			{
 				moveDirection = MoveDirection.right;
-                StartCoroutine(gm.GetBoardManager().MovePieces (moveDirection));
+                StartCoroutine(editorManager.GetBoardManager().MovePieces (moveDirection));
 			}
 		}
 	}

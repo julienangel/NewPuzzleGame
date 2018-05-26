@@ -27,12 +27,8 @@ public class BoardManager
 
     private bool piecesAreMoving = false;
 
-    testingManager gameManager;
-
-    public BoardManager(testingManager gameManager)
+    public BoardManager()
     {
-        //this.mono = mono;
-        this.gameManager = gameManager;
         LoadPrefabs();
     }
 
@@ -50,7 +46,7 @@ public class BoardManager
         PlaceBackgroundPieces(size);
         CreateBoardPieces(size);
 
-        CameraManager.cameraManager.SetPositionAndOrtographicSize(size);
+        CameraManager.instance.SetPositionAndOrtographicSize(size);
     }
 
     public void CreateBoardPieces(int size)
@@ -241,7 +237,11 @@ public class BoardManager
         piecesToMoveCount = piecesToMove.Count;
 
         if (piecesToMoveCount == 0)
+        {
             EndedPiecesMovement();
+            yield break;
+        }
+        EditorManager.Instance.IncreasePlay();
 
         for (int i = 0; i < piecesToMoveCount; i++)
         {
@@ -265,6 +265,11 @@ public class BoardManager
         if (objectivePosBoard == goalPosBoard)
             return true;
         return false;
+    }
+
+    public Vector2 GetObjectivePos()
+    {
+        return objectivePosBoard;
     }
 
     public void CleanEverything()
@@ -301,6 +306,8 @@ public class BoardManager
         {
             GameObject.Destroy(o[i]);
         }
+
+        EditorManager.Instance.ResetCount();
     }
 
     public void SetGoalPiecePos(Vector2 newPos)

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NormalPiece : MovablePiece {
+public class StaticPiece : NonMovablePiece {
 
     // Use this for initialization
-    void Start()
+    protected override void Start()
     {
         base.Start();
-        pieceType = PieceType.normal;
+        pieceType = PieceType.statice;
     }
 }

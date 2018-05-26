@@ -3,17 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class LevelEditorManager : MonoBehaviour
 {
     const float detectionOffset = -0.5f;
 
-    public static LevelEditorManager editorManager;
+    private static LevelEditorManager instance;
+    public static LevelEditorManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<LevelEditorManager>();
+            }
+            return instance;
+        }
+    }
 
-    public GameObject piecePrefab;
+    EditorManager editorManager;
+    BoardManager boardManager;
 
-    testingManager gameManager;
-    BoardManager bm;
+    Level currentlevel;
 
     Piece[,] pieceBoard;
 
@@ -24,23 +36,27 @@ public class LevelEditorManager : MonoBehaviour
     Button LevelEditorBtn, mixBoardBtn, executeSolutionBtn, saveLevelBtn, loadLevelBtn, stopSolution;
 
     //aux variables
-    testingManager.GameState previousState;
+    EditorManager.GameState previousState;
+
+    int levelCount = 0;
 
     // Use this for initialization
     void Start()
     {
-        editorManager = this;
+        if (instance == null)
+            instance = this;
         //deactivate this button when exported to platforms
         if (!Application.isEditor)
         {
             LevelEditorBtn.gameObject.SetActive(false);
-            return;
         }
 
-        gameManager = testingManager.TestingManager;
-        bm = gameManager.GetBoardManager();
+        levelCount = Resources.LoadAll("Levels").Length-1;
 
-        pieceBoard = bm.pieceBoard;
+        editorManager = EditorManager.Instance;
+        boardManager = editorManager.GetBoardManager();
+
+        pieceBoard = boardManager.pieceBoard;
 
         SetDefaultStart();
 
@@ -56,17 +72,17 @@ public class LevelEditorManager : MonoBehaviour
     {
         ColorBlock cb = LevelEditorBtn.colors;
 
-        if (gameManager.GetGameState() != testingManager.GameState.Editor)
+        if (editorManager.GetGameState() != EditorManager.GameState.Editor)
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = EDITINGCOLOR;
-            previousState = gameManager.GetGameState();
-            gameManager.SetGameState(testingManager.GameState.Editor);
+            previousState = editorManager.GetGameState();
+            editorManager.SetGameState(EditorManager.GameState.Editor);
         }
 
         else
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
-            gameManager.SetGameState(previousState);
+            editorManager.SetGameState(previousState);
         }
 
         LevelEditorBtn.colors = cb;
@@ -75,7 +91,7 @@ public class LevelEditorManager : MonoBehaviour
     public void SetDefaultStart()
     {
         ColorBlock cb = LevelEditorBtn.colors;
-        if (gameManager.GetGameState() != testingManager.GameState.Editor)
+        if (editorManager.GetGameState() != EditorManager.GameState.Editor)
         {
             cb.pressedColor = cb.highlightedColor = cb.normalColor = NONEDITINGCOLOR;
         }
@@ -89,48 +105,53 @@ public class LevelEditorManager : MonoBehaviour
 
     public void ExecuteSolutionFunc()
     {
-        gameManager.StartCoroutine(ExecuteSolution());
+        ExecuteSolution();
+    }
+
+    public void SaveLevelFuncTemp(Level newLevel)
+    {
+        LevelJsonManager.SaveInJson(newLevel, "Temp");
     }
 
     public void SaveLevelFunc(Level newLevel)
     {
-        LevelJsonManager.SaveInJson(newLevel, "Level1");
+        LevelJsonManager.SaveInJson(newLevel, "Level" + levelCount++);
     }
 
     public void LoadLevelFunc()
     {
-        Level loadedLevel = LevelJsonManager.LoadFromJson(1);
+        Level loadedLevel = LevelJsonManager.LoadFromJson(0);
 
-        bm.CleanEverything();
-        bm.CreateBoard(loadedLevel.size);
+        boardManager.CleanEverything();
+        boardManager.CreateBoard(loadedLevel.size);
 
         int pieceListCount = loadedLevel.PieceList.Count;
         for (int i = 0; i < pieceListCount; i++)
         {
             PieceInfo newPiece = loadedLevel.PieceList[i];
-            bm.InstantiateGameObject(newPiece.pieceType, newPiece.pos);
+            boardManager.InstantiateGameObject(newPiece.pieceType, newPiece.pos);
         }
     }
 
     public void StopSolution()
     {
-        gameManager.StopCoroutine(ExecuteSolution());
-        LoadLevelFunc();
+        //ExecuteSolution();
+        //LoadLevelFunc();
     }
 
     public void EditOrPlacePiece(Vector2 mousePosClick)
     {
         if (mousePosClick.x < Vector2.zero.x + detectionOffset || mousePosClick.y < Vector2.zero.y + detectionOffset ||
-            mousePosClick.x > bm.pieceBoard.GetLength(0) + detectionOffset || mousePosClick.y > bm.pieceBoard.GetLength(1) + detectionOffset)
+            mousePosClick.x > boardManager.pieceBoard.GetLength(0) + detectionOffset || mousePosClick.y > boardManager.pieceBoard.GetLength(1) + detectionOffset)
             return;
 
         Vector2 vecRoundToInt = new Vector2(Mathf.RoundToInt(mousePosClick.x), Mathf.RoundToInt(mousePosClick.y));
 
-        if (bm.pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y] != null)
+        if (boardManager.pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y] != null)
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                GameObject.Destroy(bm.pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y].gameObject);
+                GameObject.Destroy(boardManager.pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y].gameObject);
                 pieceBoard[(int)vecRoundToInt.x, (int)vecRoundToInt.y] = null;
             }
         }
@@ -138,29 +159,29 @@ public class LevelEditorManager : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.A))
             {
-                bm.InstantiateGameObject(PieceType.normal, vecRoundToInt);
+                boardManager.InstantiateGameObject(PieceType.normal, vecRoundToInt);
             }
             else if (Input.GetKey(KeyCode.S))
             {
-                bm.InstantiateGameObject(PieceType.statice, vecRoundToInt);
+                boardManager.InstantiateGameObject(PieceType.statice, vecRoundToInt);
             }
             else if (Input.GetKey(KeyCode.D))
             {
-                bm.InstantiateGameObject(PieceType.goal, vecRoundToInt);
+                boardManager.InstantiateGameObject(PieceType.goal, vecRoundToInt);
             }
             else if (Input.GetKey(KeyCode.F))
             {
-                bm.InstantiateGameObject(PieceType.objective, vecRoundToInt);
+                boardManager.InstantiateGameObject(PieceType.objective, vecRoundToInt);
             }
         }
     }
 
     public void CreateRandomLevel()
     {
-        bm.CleanEverything();
-        bm.CreateBoard(6);
+        boardManager.CleanEverything();
+        boardManager.CreateBoard(6);
 
-        pieceBoard = bm.pieceBoard;
+        pieceBoard = boardManager.pieceBoard;
 
         //creating random movable objects
         for (int i = 0; i < (int)pieceBoard.GetLength(0) / 2; i++)
@@ -170,7 +191,7 @@ public class LevelEditorManager : MonoBehaviour
             while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
                 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
 
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = bm.InstantiateGameObject(PieceType.normal, new Vector2((int)randomPos.x, (int)randomPos.y));
+            pieceBoard[(int)randomPos.x, (int)randomPos.y] = boardManager.InstantiateGameObject(PieceType.normal, new Vector2((int)randomPos.x, (int)randomPos.y));
         }
 
         //creating random static objects
@@ -181,7 +202,7 @@ public class LevelEditorManager : MonoBehaviour
             while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
                 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
 
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = bm.InstantiateGameObject(PieceType.statice, new Vector2((int)randomPos.x, (int)randomPos.y));
+            pieceBoard[(int)randomPos.x, (int)randomPos.y] = boardManager.InstantiateGameObject(PieceType.statice, new Vector2((int)randomPos.x, (int)randomPos.y));
         }
 
         //creating goal piece
@@ -191,7 +212,7 @@ public class LevelEditorManager : MonoBehaviour
             while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
                 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
 
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = bm.InstantiateGameObject(PieceType.goal, new Vector2((int)randomPos.x, (int)randomPos.y));
+            pieceBoard[(int)randomPos.x, (int)randomPos.y] = boardManager.InstantiateGameObject(PieceType.goal, new Vector2((int)randomPos.x, (int)randomPos.y));
         }
 
         //Create the main piece
@@ -201,133 +222,75 @@ public class LevelEditorManager : MonoBehaviour
             while (pieceBoard[(int)randomPos.x, (int)randomPos.y] != null)
                 randomPos = new Vector2((int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)), (int)UnityEngine.Random.Range(0, pieceBoard.GetLength(0)));
 
-            pieceBoard[(int)randomPos.x, (int)randomPos.y] = bm.InstantiateGameObject(PieceType.objective, new Vector2((int)randomPos.x, (int)randomPos.y));
+            pieceBoard[(int)randomPos.x, (int)randomPos.y] = boardManager.InstantiateGameObject(PieceType.objective, new Vector2((int)randomPos.x, (int)randomPos.y));
+            boardManager.SetGoalPiecePos(new Vector2((int)randomPos.x, (int)randomPos.y));
         }
+
+        Invoke("ExecuteSolution", 0.1f);
     }
 
-    public IEnumerator ExecuteSolution()
+    public void ExecuteSolution()
     {
-        int sizeToSearch = 20;
-        pieceBoard = bm.pieceBoard;
-        gameManager.SetGameState(testingManager.GameState.Solving);
-        Level newLevel = new Level(pieceBoard.GetLength(0));
-        bool foundSolution = false;
-        List<InputHandler.MoveDirection> solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
-        sizeToSearch = 20;
+        editorManager.SetGameState(EditorManager.GameState.Solving);
 
-        List<InputHandler.MoveDirection> directionsAble = new List<InputHandler.MoveDirection>
-            {
-                InputHandler.MoveDirection.down,
-                InputHandler.MoveDirection.Up,
-                InputHandler.MoveDirection.right,
-                InputHandler.MoveDirection.left
-            };
+        pieceBoard = boardManager.pieceBoard;
 
-        for (int r = 0; r < 1000; r++)
+        PieceType[] board = new PieceType[pieceBoard.Length];
+        int k = 0;
+        for (int i = pieceBoard.GetLength(1) - 1; i >= 0; i--)
         {
-            solutionBoardTemp = new List<InputHandler.MoveDirection>(sizeToSearch);
-            int mixedBoardLength = solutionBoardTemp.Capacity;
 
-            List<InputHandler.MoveDirection> verticalDirection = new List<InputHandler.MoveDirection>
+            for (int j = 0; j < pieceBoard.GetLength(0); j++)
             {
-                InputHandler.MoveDirection.down,
-                InputHandler.MoveDirection.Up
-            };
+                Piece x = pieceBoard[j, i];
+                board[k++] = x && x.GetPieceType() != PieceType.objective ? x.GetPieceType() : PieceType.empty;
 
-            List<InputHandler.MoveDirection> horizontalDirection = new List<InputHandler.MoveDirection>
-            {
-                InputHandler.MoveDirection.right,
-                InputHandler.MoveDirection.left
-            };
-
-            for (int i = 0; i < mixedBoardLength && !bm.VerifyIfWin(); i++)
-            {
-                InputHandler.MoveDirection dir = directionsAble[UnityEngine.Random.Range(0, directionsAble.Count)];
-
-                if (verticalDirection.Contains(dir))
-                {
-                    directionsAble = new List<InputHandler.MoveDirection>();
-                    directionsAble.Add(InputHandler.MoveDirection.right);
-                    directionsAble.Add(InputHandler.MoveDirection.left);
-                }
-                else
-                {
-                    directionsAble = new List<InputHandler.MoveDirection>();
-                    directionsAble.Add(InputHandler.MoveDirection.Up);
-                    directionsAble.Add(InputHandler.MoveDirection.down);
-                }
-
-                yield return gameManager.StartCoroutine(bm.MovePieces(dir));
-
-                if(!bm.DidMove())
-                {
-                    if (verticalDirection.Contains(dir))
-                    {
-                        if (dir == InputHandler.MoveDirection.Up)
-                            dir = InputHandler.MoveDirection.down;
-                        else
-                            dir = InputHandler.MoveDirection.Up;
-                    }
-                    else
-                    {
-                        if (dir == InputHandler.MoveDirection.right)
-                            dir = InputHandler.MoveDirection.left;
-                        else
-                            dir = InputHandler.MoveDirection.right;
-                    }
-                    yield return gameManager.StartCoroutine(bm.MovePieces(dir));
-                }
-
-                //directionsAble.Remove(dir);
-
-                solutionBoardTemp.Add(dir);
-
-                if (i != 0)
-                {
-                    directionsAble.Add(solutionBoardTemp[solutionBoardTemp.Count - 2]);
-                }
-
-                //yield return new WaitForSeconds(Piece.PIECE_TIME_VELOCITY);
-                yield return new WaitForEndOfFrame();
             }
-
-            if (solutionBoardTemp.Count < sizeToSearch && bm.VerifyIfWin())
-            {
-                Debug.Log("Encontrou uma solução mais pequena : " + solutionBoardTemp.Count);
-
-                newLevel.directionListSolution.Clear();
-                newLevel.directionListSolution = new List<InputHandler.MoveDirection>(solutionBoardTemp);
-
-                foundSolution = true;
-
-                sizeToSearch = solutionBoardTemp.Count;
-            }
-
-            solutionBoardTemp.Clear();
-
-            yield return new WaitForEndOfFrame();
-
-            LoadLevelFunc();
-
-            yield return new WaitForEndOfFrame();
-
-            GC.Collect();
         }
 
-        if (foundSolution)
-        {
-            SaveLevel(newLevel);
-        }
+        LevelSolver newLevelSolver = new LevelSolver(pieceBoard.GetLength(0), pieceBoard.GetLength(1), board);
+        newLevelSolver.SetGoals(new Tuple<int, int>(pieceBoard.GetLength(0) - (int)boardManager.GetObjectivePos().y - 1, (int)boardManager.GetObjectivePos().x));
 
-        yield return new WaitForSeconds(.2f);
-        sizeToSearch = 20;
-        gameManager.SetGameState(testingManager.GameState.InGame);
+        List<InputHandler.MoveDirection> moveDirections = newLevelSolver.Solve();
+        if (moveDirections.Count > 0)
+        {
+            print(String.Join(" ", moveDirections.Select(x => x.ToString())));
+            SaveLevelTemp(moveDirections);
+        }
+        else
+        {
+            print("Nao tem solução!");
+        }
+        editorManager.SetGameState(EditorManager.GameState.InGame);
     }
 
-    public void SaveLevel(Level newLevel)
+    public void SaveLevel()
     {
-        pieceBoard = bm.pieceBoard;
-        int size = newLevel.size;
+        //pieceBoard = boardManager.pieceBoard;
+        //int size = pieceBoard.GetLength(0);
+        //Level level = new Level(size);
+
+        //for (int i = 0; i < size; i++)
+        //{
+        //    for (int j = 0; j < size; j++)
+        //    {
+        //        if (pieceBoard[i, j] != null)
+        //        {
+        //            PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetPieceType());
+        //            level.AddPieceElement(pieceInfo);
+        //        }
+        //    }
+        //}
+
+        //currentlevel = level;
+        SaveLevelFunc(currentlevel);
+    }
+
+    public void SaveLevelTemp(List<InputHandler.MoveDirection> directions)
+    {
+        pieceBoard = boardManager.pieceBoard;
+        int size = pieceBoard.GetLength(0);
+        Level level = new Level(size);
 
         for (int i = 0; i < size; i++)
         {
@@ -336,17 +299,19 @@ public class LevelEditorManager : MonoBehaviour
                 if (pieceBoard[i, j] != null)
                 {
                     PieceInfo pieceInfo = new PieceInfo(new Vector2(i, j), pieceBoard[i, j].GetPieceType());
-                    newLevel.AddPieceElement(pieceInfo);
+                    level.AddPieceElement(pieceInfo);
                 }
             }
         }
+        level.directionListSolution = directions;
 
-        SaveLevelFunc(newLevel);
+        currentlevel = level;
+        SaveLevelFuncTemp(level);
     }
 
-    public void SaveLevel()
+    public void SaveLevelTemp()
     {
-        pieceBoard = bm.pieceBoard;
+        pieceBoard = boardManager.pieceBoard;
         int size = pieceBoard.GetLength(0);
         Level level = new Level(size);
 
@@ -362,6 +327,7 @@ public class LevelEditorManager : MonoBehaviour
             }
         }
 
-        SaveLevelFunc(level);
+        currentlevel = level;
+        SaveLevelFuncTemp(level);
     }
 }

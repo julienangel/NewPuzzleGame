@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NonMovablePiece : Piece {
+public class NormalPiece : MovablePiece {
 
     // Use this for initialization
-    public override void Start()
+    protected override void Start()
     {
         base.Start();
+        pieceType = PieceType.normal;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class LevelJsonManager {
+public static class LevelJsonManager {
 
     public static void SaveInJson(Level level, string LevelName)
     {
